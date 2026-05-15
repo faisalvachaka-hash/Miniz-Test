@@ -2,25 +2,60 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  ACTIVITIES,
   AGES,
   SUGGESTIONS,
   generateActivity,
+  mapActivityFromDB,
   type Activity,
   type AgeKey,
 } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
 
 export default function MinizApp() {
-  const [currentAge, setCurrentAge] = useState<AgeKey | null>(null);
+  const [curatedActivities, setCuratedActivities] = useState<Activity[]>([]);
   const [customActivities, setCustomActivities] = useState<Activity[]>([]);
+  const [loadingActivities, setLoadingActivities] = useState(true);
+  const [currentAge, setCurrentAge] = useState<AgeKey | null>(null);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
   const [builderText, setBuilderText] = useState("");
   const [builderAge, setBuilderAge] = useState<AgeKey>(2);
+  const [saving, setSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Fetch curated activities from Supabase on mount
+  useEffect(() => {
+    supabase
+      .from("activities")
+      .select("*")
+      .is("user_id", null)
+      .order("age", { ascending: true })
+      .then(({ data, error }) => {
+        if (data && data.length > 0) {
+          setCuratedActivities(data.map(mapActivityFromDB));
+        }
+        if (error) console.error("Failed to load activities:", error.message);
+        setLoadingActivities(false);
+      });
+  }, []);
+
+  // Fetch user's saved custom activities if logged in
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase
+        .from("activities")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .then(({ data }) => {
+          if (data) setCustomActivities(data.map(mapActivityFromDB));
+        });
+    });
+  }, []);
+
   const allActivities = useMemo(
-    () => [...customActivities, ...ACTIVITIES],
-    [customActivities]
+    () => [...customActivities, ...curatedActivities],
+    [customActivities, curatedActivities]
   );
 
   const filteredActivities = useMemo(
@@ -59,16 +94,57 @@ export default function MinizApp() {
     setCurrentAge((prev) => (prev === age ? null : age));
   }
 
-  function handleBuild() {
+  async function handleBuild() {
     const text = builderText.trim();
     if (!text) {
       textareaRef.current?.focus();
       return;
     }
+
+    setSaving(true);
     const activity = generateActivity(text, builderAge);
+
+    // If logged in, persist to Supabase
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data, error } = await supabase
+        .from("activities")
+        .insert({
+          age: activity.age,
+          title: activity.title,
+          emoji: activity.emoji,
+          color: activity.color,
+          area: activity.area,
+          subject: activity.area.split(" · ")[0] || "General",
+          duration: activity.duration,
+          materials: activity.materials,
+          steps: activity.steps,
+          prior_stage: activity.prior.stage,
+          prior_desc: activity.prior.desc,
+          safety: activity.safety || null,
+          is_custom: true,
+          user_id: user.id,
+        })
+        .select()
+        .single();
+
+      if (data && !error) {
+        const saved = mapActivityFromDB(data as Record<string, unknown>);
+        setCustomActivities((prev) => [saved, ...prev]);
+        setCurrentAge(builderAge);
+        setBuilderText("");
+        setSaving(false);
+        setTimeout(() => setSelectedId(saved.id), 200);
+        return;
+      }
+      if (error) console.error("Save failed:", error.message);
+    }
+
+    // Fallback: local state only (not logged in, or save failed)
     setCustomActivities((prev) => [activity, ...prev]);
     setCurrentAge(builderAge);
     setBuilderText("");
+    setSaving(false);
     setTimeout(() => setSelectedId(activity.id), 200);
   }
 
@@ -162,7 +238,20 @@ export default function MinizApp() {
           Activities <span className="pill">{currentAgeLabel}</span>
         </div>
 
-        {filteredActivities.length === 0 ? (
+        {loadingActivities ? (
+          <div
+            className="grid gap-[18px] mt-[18px]"
+            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}
+          >
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="activity-card" style={{ ["--accent" as string]: "#e5e7eb" }}>
+                <div style={{ width: 56, height: 56, borderRadius: 16, background: "#f3f4f6", marginBottom: 12 }} />
+                <div style={{ height: 20, width: "70%", background: "#f3f4f6", borderRadius: 8, marginBottom: 8 }} />
+                <div style={{ height: 14, width: "50%", background: "#f3f4f6", borderRadius: 8 }} />
+              </div>
+            ))}
+          </div>
+        ) : filteredActivities.length === 0 ? (
           <div className="text-center py-12 text-[var(--soft-ink)] font-semibold">
             <span className="block text-6xl mb-2.5">🌱</span>
             No activities yet — try the builder below!
@@ -193,6 +282,11 @@ export default function MinizApp() {
                   <span className="chip">{AGES.find((x) => x.age === a.age)?.label}</span>
                   <span className="chip duration">⏱ {a.duration}</span>
                   <span className="chip area">{a.area}</span>
+                  {a.easeOfPrep && (
+                    <span className="chip" style={{ background: "#edf7ed", color: "#1a6e2e" }}>
+                      ⚡ Prep {a.easeOfPrep}/10
+                    </span>
+                  )}
                   {a.isCustom && <span className="chip custom">✨ custom</span>}
                 </div>
               </div>
@@ -227,8 +321,8 @@ export default function MinizApp() {
                 <option value={4}>4 — Pre-schooler</option>
                 <option value={5}>5 — Little learner</option>
               </select>
-              <button className="btn-primary" onClick={handleBuild}>
-                ✨ Create activity
+              <button className="btn-primary" onClick={handleBuild} disabled={saving}>
+                {saving ? "Saving…" : "✨ Create activity"}
               </button>
             </div>
           </div>
@@ -297,6 +391,12 @@ function ActivityModal({
               <div className="stat-label">Age</div>
               <div className="stat-value">{ageLabel}</div>
             </div>
+            {activity.easeOfPrep && (
+              <div className="stat">
+                <div className="stat-label">Ease of prep</div>
+                <div className="stat-value">⚡ {activity.easeOfPrep}/10</div>
+              </div>
+            )}
             <div className="stat">
               <div className="stat-label">Focus</div>
               <div className="stat-value" style={{ fontSize: 13 }}>

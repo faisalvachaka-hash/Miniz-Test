@@ -20,11 +20,13 @@ export type Activity = {
   emoji: string;
   color: string;
   area: string;
+  subject?: string;
   duration: string;
   materials: string[];
   steps: string[];
   prior: PriorStage;
   safety?: string;
+  easeOfPrep?: number;
   isCustom?: boolean;
 };
 
@@ -37,6 +39,29 @@ export const AGES: AgeGroup[] = [
   { age: 5, label: "5 years", sub: "Little learner", emoji: "📚", color: "#a37cf0" },
 ];
 
+export function mapActivityFromDB(row: Record<string, unknown>): Activity {
+  return {
+    id: row.id as string,
+    age: row.age as AgeKey,
+    title: row.title as string,
+    emoji: row.emoji as string,
+    color: row.color as string,
+    area: row.area as string,
+    subject: row.subject as string | undefined,
+    duration: row.duration as string,
+    materials: row.materials as string[],
+    steps: row.steps as string[],
+    prior: {
+      stage: row.prior_stage as string,
+      desc: row.prior_desc as string,
+    },
+    safety: (row.safety as string) || undefined,
+    easeOfPrep: row.ease_of_prep as number | undefined,
+    isCustom: row.is_custom as boolean | undefined,
+  };
+}
+
+// ---- REMOVE AFTER DB IS SEEDED (kept as fallback during transition) ----
 export const ACTIVITIES: Activity[] = [
   {
     id: 1, age: 0, title: "High-Contrast Mobile Watching", emoji: "🖤", color: "#ff6fa3",
