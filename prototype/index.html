@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mini Z and Me — Early Years Play & Learning</title>
+<style>
+  :root {
+    --bubblegum: #ff6fa3;
+    --sunshine: #ffd43b;
+    --sky: #4dc3ff;
+    --mint: #5ed9b1;
+    --grape: #a37cf0;
+    --tangerine: #ff9a3c;
+    --cream: #fff8ef;
+    --ink: #2b2740;
+    --soft-ink: #5d5878;
+    --card-shadow: 0 10px 30px rgba(43, 39, 64, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, #fff1f6 0%, #f0f9ff 40%, #fef8e1 100%);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Floating background shapes */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.35;
+    z-index: -1;
+    animation: float 18s ease-in-out infinite;
+  }
+  .blob.b1 { width: 320px; height: 320px; background: var(--bubblegum); top: -80px; left: -80px; }
+  .blob.b2 { width: 380px; height: 380px; background: var(--sky); top: 30%; right: -120px; animation-delay: -6s; }
+  .blob.b3 { width: 280px; height: 280px; background: var(--sunshine); bottom: -100px; left: 30%; animation-delay: -12s; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(40px, -30px) scale(1.1); }
+  }
+
+  header {
+    text-align: center;
+    padding: 36px 20px 16px;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 14px 28px;
+    border-radius: 100px;
+    box-shadow: var(--card-shadow);
+  }
+  .logo-dot {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: conic-gradient(var(--bubblegum), var(--sunshine), var(--sky), var(--mint), var(--grape), var(--bubblegum));
+    animation: spin 8s linear infinite;
+    position: relative;
+  }
+  .logo-dot::after {
+    content: "Z";
+    position: absolute;
+    inset: 6px;
+    background: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900;
+    color: var(--grape);
+    font-size: 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .logo h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(90deg, var(--bubblegum), var(--grape), var(--sky));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.5px;
+  }
+  .tagline {
+    margin-top: 14px;
+    color: var(--soft-ink);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 20px 20px 80px;
+  }
+
+  /* Section headers */
+  .section-title {
+    font-size: 22px;
+    font-weight: 900;
+    margin: 36px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .pill {
+    background: white;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--soft-ink);
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  /* Age tiles */
+  .age-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+  }
+  .age-tile {
+    background: white;
+    border-radius: 24px;
+    padding: 22px 18px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .age-tile::before {
+    content: "";
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    opacity: 0.25;
+    background: var(--tile-color, var(--bubblegum));
+    transition: transform 0.4s;
+  }
+  .age-tile:hover { transform: translateY(-6px); box-shadow: 0 16px 36px rgba(43,39,64,0.18); }
+  .age-tile:hover::before { transform: scale(1.4); }
+  .age-tile.active {
+    border-color: var(--tile-color);
+    transform: translateY(-4px);
+  }
+  .age-tile.active::before { transform: scale(1.4); }
+  .age-emoji { font-size: 42px; line-height: 1; margin-bottom: 8px; }
+  .age-label { font-weight: 900; font-size: 18px; }
+  .age-sub { font-size: 12px; color: var(--soft-ink); font-weight: 600; margin-top: 4px; }
+  .age-count {
+    margin-top: 10px;
+    display: inline-block;
+    background: var(--tile-color);
+    color: white;
+    font-weight: 800;
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  /* Activity cards */
+  .activity-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+  }
+  .activity-card {
+    background: white;
+    border-radius: 22px;
+    padding: 20px;
+    cursor: pointer;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-top: 6px solid var(--accent, var(--mint));
+    position: relative;
+  }
+  .activity-card:hover { transform: translateY(-4px); box-shadow: 0 16px 36px rgba(43,39,64,0.16); }
+  .activity-icon {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    background: var(--accent, var(--mint));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+  .activity-title { font-size: 17px; font-weight: 900; margin: 0 0 6px; }
+  .activity-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+  }
+  .chip {
+    background: #f3f1fa;
+    color: var(--ink);
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .chip.duration { background: #fff3d4; color: #8a6500; }
+  .chip.area { background: #e1f5ec; color: #1f7a55; }
+
+  /* Builder */
+  .builder {
+    background: white;
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: var(--card-shadow);
+    margin-top: 16px;
+  }
+  .builder-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .builder textarea {
+    flex: 1;
+    min-width: 240px;
+    min-height: 80px;
+    border: 2px solid #efeaf7;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-family: inherit;
+    font-size: 15px;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .builder textarea:focus { border-color: var(--grape); }
+  .builder-side {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 160px;
+  }
+  .builder select {
+    border: 2px solid #efeaf7;
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    background: white;
+    cursor: pointer;
+    outline: none;
+  }
+  .btn {
+    background: linear-gradient(90deg, var(--bubblegum), var(--grape));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 22px;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(163, 124, 240, 0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(163, 124, 240, 0.55); }
+  .btn:active { transform: translateY(0); }
+
+  .suggestions {
+    margin-top: 14px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .suggestion {
+    background: #f5f0ff;
+    color: var(--grape);
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1.5px dashed var(--grape);
+    transition: background 0.2s;
+  }
+  .suggestion:hover { background: var(--grape); color: white; }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 39, 64, 0.55);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    animation: fadeIn 0.2s;
+  }
+  .modal-backdrop.show { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .modal {
+    background: white;
+    border-radius: 28px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    animation: pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.85); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .modal-header {
+    padding: 28px 28px 20px;
+    background: linear-gradient(135deg, var(--accent, var(--mint)) 0%, rgba(255,255,255,0) 100%);
+    border-radius: 28px 28px 0 0;
+    position: relative;
+  }
+  .modal-close {
+    position: absolute;
+    top: 18px; right: 18px;
+    background: white;
+    border: none;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    font-weight: 900;
+    color: var(--ink);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .modal-emoji { font-size: 54px; }
+  .modal h2 { margin: 8px 0 4px; font-size: 24px; font-weight: 900; }
+  .modal-sub { color: var(--soft-ink); font-weight: 600; font-size: 14px; }
+  .modal-body { padding: 8px 28px 28px; }
+  .modal-section {
+    margin-top: 22px;
+  }
+  .modal-section h3 {
+    margin: 0 0 10px;
+    font-size: 15px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--grape);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .materials-list, .steps-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .materials-list li {
+    padding: 10px 14px;
+    background: #faf7ff;
+    border-radius: 12px;
+    margin-bottom: 6px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .materials-list li::before {
+    content: "✓";
+    color: var(--mint);
+    font-weight: 900;
+    font-size: 18px;
+  }
+  .steps-list li {
+    padding: 10px 0 10px 38px;
+    position: relative;
+    counter-increment: step;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+  .steps-list { counter-reset: step; }
+  .steps-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0; top: 8px;
+    width: 26px; height: 26px;
+    background: var(--bubblegum);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900;
+    font-size: 13px;
+  }
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .stat {
+    background: linear-gradient(135deg, #fff9ed, #fff);
+    border-radius: 14px;
+    padding: 14px;
+    text-align: center;
+    border: 2px solid #fff3d4;
+  }
+  .stat-label { font-size: 11px; color: var(--soft-ink); font-weight: 700; text-transform: uppercase; }
+  .stat-value { font-size: 18px; font-weight: 900; margin-top: 4px; }
+
+  .prior-stage {
+    background: linear-gradient(135deg, #eaf7ff, #fff);
+    border: 2px solid #cdeaff;
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 10px;
+  }
+  .prior-stage-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--sky);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .prior-stage-title { font-weight: 900; margin: 4px 0; }
+  .prior-stage-desc { font-size: 14px; color: var(--soft-ink); font-weight: 500; line-height: 1.5; }
+
+  .safety-banner {
+    background: #fff4e6;
+    border-left: 4px solid var(--tangerine);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #7a4a0a;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--soft-ink);
+    font-weight: 600;
+  }
+  .empty-emoji { font-size: 60px; display: block; margin-bottom: 10px; }
+
+  footer {
+    text-align: center;
+    padding: 30px 20px;
+    color: var(--soft-ink);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    .logo h1 { font-size: 22px; }
+    .section-title { font-size: 18px; }
+    .modal-header, .modal-body { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+
+  <header>
+    <div class="logo">
+      <div class="logo-dot"></div>
+      <h1>Mini Z and Me</h1>
+    </div>
+    <div class="tagline">Playful learning for tiny humans · ages 0 to 5</div>
+  </header>
+
+  <main>
+    <div class="section-title">
+      Pick an age <span class="pill">tap to explore</span>
+    </div>
+    <div class="age-grid" id="ageGrid"></div>
+
+    <div class="section-title" id="activitiesTitle">
+      Activities <span class="pill" id="ageDisplay">all ages</span>
+    </div>
+    <div class="activity-grid" id="activityGrid"></div>
+
+    <div class="section-title">
+      Build your own activity <span class="pill">type a play idea</span>
+    </div>
+    <div class="builder">
+      <div class="builder-row">
+        <textarea id="builderInput" placeholder="e.g. I want to create a water sensory play activity for my two year old"></textarea>
+        <div class="builder-side">
+          <select id="builderAge">
+            <option value="0">0 — Baby</option>
+            <option value="1">1 — Toddler</option>
+            <option value="2" selected>2 — Tiny explorer</option>
+            <option value="3">3 — Curious kid</option>
+            <option value="4">4 — Pre-schooler</option>
+            <option value="5">5 — Little learner</option>
+          </select>
+          <button class="btn" id="builderBtn">✨ Create activity</button>
+        </div>
+      </div>
+      <div class="suggestions" id="suggestions"></div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="modal">
+    <div class="modal" id="modalBox">
+      <div class="modal-header" id="modalHeader">
+        <button class="modal-close" id="modalClose">×</button>
+        <div class="modal-emoji" id="modalEmoji"></div>
+        <h2 id="modalTitle"></h2>
+        <div class="modal-sub" id="modalSub"></div>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <footer>Made with love for curious little minds · Mini Z and Me © 2026</footer>
+
+<script>
+  /* ============================================================
+     Age groups
+  ============================================================ */
+  const AGES = [
+    { age: 0, label: "0 years", sub: "Baby",          emoji: "👶", color: "#ff6fa3" },
+    { age: 1, label: "1 year",  sub: "Wobbler",       emoji: "🍼", color: "#ff9a3c" },
+    { age: 2, label: "2 years", sub: "Tiny explorer", emoji: "🧸", color: "#ffd43b" },
+    { age: 3, label: "3 years", sub: "Curious kid",   emoji: "🎨", color: "#5ed9b1" },
+    { age: 4, label: "4 years", sub: "Pre-schooler",  emoji: "🚀", color: "#4dc3ff" },
+    { age: 5, label: "5 years", sub: "Little learner",emoji: "📚", color: "#a37cf0" }
+  ];
+
+  /* ============================================================
+     Activity library — curated, age-mapped
+  ============================================================ */
+  const ACTIVITIES = [
+    // 0 year — Baby
+    { id: 1, age: 0, title: "High-Contrast Mobile Watching", emoji: "🖤", color: "#ff6fa3", area: "Visual development",
+      duration: "5–10 min",
+      materials: ["Black & white printed cards", "Soft mat or play gym", "Cushion for tummy time"],
+      steps: ["Lay baby on their back or tummy on a soft mat.","Hold the high-contrast card 20–30 cm above their face.","Slowly move the card left and right and watch their eyes track it.","Swap cards every minute to keep their attention."],
+      prior: { stage: "Newborn (0–3 months)", desc: "Builds on a newborn's natural preference for bold edges. At this earlier stage, even just dimmed lighting and your face were the main visual stimulation." },
+      safety: "Always supervise. Never leave printed cards within reach of baby's mouth."
+    },
+    { id: 2, age: 0, title: "Treasure Basket Texture Touch", emoji: "🧺", color: "#ff9a3c", area: "Sensory · Fine motor",
+      duration: "10 min",
+      materials: ["Shallow basket","Wooden spoon","Soft fabric scrap","Crinkly paper","Silicone whisk","Cool metal teether"],
+      steps: ["Sit baby supported on the floor.","Place the basket within easy reach.","Let baby choose, mouth and explore each item at their own pace.","Name each texture as they touch it: 'soft', 'cold', 'crinkly'."],
+      prior: { stage: "Newborn (0–3 months)", desc: "Earlier, sensory input came mostly from being held and skin-to-skin contact. The basket extends this into self-directed touch exploration." },
+      safety: "All items must be larger than baby's fist (no choking hazards). Always supervise."
+    },
+    // 1 year — Wobbler
+    { id: 3, age: 1, title: "Pots & Pans Orchestra", emoji: "🥁", color: "#ff9a3c", area: "Music · Cause & effect",
+      duration: "15 min",
+      materials: ["2–3 metal pots","Wooden spoon","Plastic bowl","Optional metal whisk"],
+      steps: ["Sit on the kitchen floor with child.","Demonstrate one tap on a pot, then pause.","Hand them the spoon and let them experiment.","Copy their rhythm back to model turn-taking."],
+      prior: { stage: "Baby (0–12 months)", desc: "Earlier, the focus was on listening and being sung to. Now the child becomes the music maker — a huge leap in agency and cause-and-effect understanding." },
+      safety: "Use lightweight pans. Stay close to prevent fingers from being caught."
+    },
+    { id: 4, age: 1, title: "Posting Box", emoji: "📮", color: "#ffd43b", area: "Fine motor · Problem solving",
+      duration: "10–15 min",
+      materials: ["Cardboard box","Slot cut in the top","Large wooden discs or jar lids","Small basket to refill"],
+      steps: ["Show the child how one disc goes into the slot.","Cheer when they hear it drop inside.","Open the box together to reveal the 'treasure'.","Refill and repeat — they will want to do it many times."],
+      prior: { stage: "Baby (6–12 months)", desc: "Builds on object permanence games like peek-a-boo. The child is now ready to actively cause objects to 'disappear' and reappear." },
+      safety: "Ensure discs are at least 4 cm wide so they cannot be swallowed."
+    },
+    // 2 years — Tiny explorer
+    { id: 5, age: 2, title: "Water Sensory Play", emoji: "💧", color: "#4dc3ff", area: "Sensory · Fine motor",
+      duration: "20–30 min",
+      materials: ["Shallow tub or tray","Warm water (1–2 cm deep)","Cups and small jugs","Sponge or wash cloth","Floating toys","Towel for the floor"],
+      steps: ["Lay a towel down to catch splashes.","Fill the tub with a small amount of warm water.","Show pouring from cup to cup, then let them lead.","Add bubbles or food colouring for variation."],
+      prior: { stage: "1 year — Wobbler", desc: "At one, water play was about splashing in the bath and feeling wet/dry. Now they are ready to use containers and pour with purpose — building wrist control and early volume concepts." },
+      safety: "Never leave a child unsupervised near water, even shallow water."
+    },
+    { id: 6, age: 2, title: "Sticker Faces", emoji: "😀", color: "#ff6fa3", area: "Fine motor · Early literacy",
+      duration: "15 min",
+      materials: ["Large round stickers","Paper plate","Crayons"],
+      steps: ["Draw a big circle on the plate.","Help them peel stickers and place them as eyes/nose.","Talk about each feature as they add it.","Draw a smile together at the end."],
+      prior: { stage: "1 year — Wobbler", desc: "Previously the child enjoyed pointing to face parts on you. Now they can begin reconstructing a face — early symbolic thinking." },
+      safety: "Use stickers larger than 3 cm to avoid them being put in the mouth and swallowed."
+    },
+    { id: 7, age: 2, title: "Dough Squish Tray", emoji: "🍪", color: "#5ed9b1", area: "Sensory · Fine motor",
+      duration: "20 min",
+      materials: ["Soft play dough","Rolling pin","Cookie cutters","Plastic knife"],
+      steps: ["Set up dough on a wipeable surface.","Show squishing, rolling, pinching.","Add cutters once they are interested.","Encourage them to name the shapes."],
+      prior: { stage: "1 year — Wobbler", desc: "Earlier, hand strength came from squishing food at mealtimes. Dough extends this into a longer, intentional sensory play." },
+      safety: "Use taste-safe dough. Supervise so it isn't eaten in large amounts."
+    },
+    // 3 years — Curious kid
+    { id: 8, age: 3, title: "Rainbow Rice Scoop", emoji: "🌈", color: "#a37cf0", area: "Sensory · Maths",
+      duration: "30 min",
+      materials: ["Dyed dry rice (food colouring + vinegar)","Large tray","Scoops, funnels, small jars","Spoons"],
+      steps: ["Pour rice into the tray.","Demonstrate scooping into a jar.","Encourage filling, pouring, and counting scoops.","Hide small toys for them to find."],
+      prior: { stage: "2 years — Tiny explorer", desc: "At two, water play introduced pouring. Rice is the next step — solid but flowing, so it builds the same skill with a different sensory profile and less mess control." },
+      safety: "Not suitable if child still mouths objects. Supervise closely."
+    },
+    { id: 9, age: 3, title: "Nature Treasure Hunt", emoji: "🍂", color: "#5ed9b1", area: "Outdoor · Vocabulary",
+      duration: "30–45 min",
+      materials: ["Small basket or paper bag","Printable picture list (leaf, stone, feather, stick)","Magnifying glass (optional)"],
+      steps: ["Walk to a garden or park together.","Show them the picture list.","Hunt for each item and tick it off.","Lay treasures out at home and talk about each one."],
+      prior: { stage: "2 years — Tiny explorer", desc: "Two-year-olds enjoyed naming things they saw outside. The hunt adds a goal and sequence — strengthening memory and category words." },
+      safety: "Teach 'look but don't taste'. Wash hands after."
+    },
+    // 4 years — Pre-schooler
+    { id: 10, age: 4, title: "Letter Sound Hop", emoji: "🔤", color: "#4dc3ff", area: "Phonics · Gross motor",
+      duration: "20 min",
+      materials: ["Chalk or paper plates","Marker","Open space"],
+      steps: ["Write letters on plates and place them on the floor.","Call out a sound — child hops to that letter.","Switch roles: child calls the sound for you.","Use only sounds they recognise to keep it fun."],
+      prior: { stage: "3 years — Curious kid", desc: "At three, the focus was on hearing rhymes and singing the alphabet. Now they can map sounds to written letters — the first big phonics step." },
+      safety: "Make sure the play space is clear of trip hazards."
+    },
+    { id: 11, age: 4, title: "Pretend Post Office", emoji: "✉️", color: "#ff9a3c", area: "Literacy · Imaginative play",
+      duration: "30–45 min",
+      materials: ["Old envelopes","Paper","Crayons","Stickers as 'stamps'","Cardboard box as postbox"],
+      steps: ["Set up a writing desk and postbox.","Help child 'write' a letter (scribbles count!).","Fold, stamp, address, and post.","Be the postie and deliver back to them."],
+      prior: { stage: "3 years — Curious kid", desc: "Three-year-olds enjoyed mark-making for its own sake. Now writing has a purpose — communication — which is the seed of literacy." },
+      safety: "Use child-safe scissors only with supervision."
+    },
+    // 5 years — Little learner
+    { id: 12, age: 5, title: "Build a Bridge Challenge", emoji: "🌉", color: "#a37cf0", area: "STEM · Problem solving",
+      duration: "30–60 min",
+      materials: ["Paper cups","Lolly sticks","Tape","A small toy car to test","Books to act as supports"],
+      steps: ["Set up two books as 'river banks' about 20cm apart.","Challenge: build a bridge the car can cross.","Test designs and let them fail and rebuild.","Talk about what made the strongest design."],
+      prior: { stage: "4 years — Pre-schooler", desc: "At four, building was about stacking and balancing. Now they can hold a design goal in mind across multiple attempts — early engineering thinking." },
+      safety: "Supervise use of tape and sticks. Keep small parts away from younger siblings."
+    },
+    { id: 13, age: 5, title: "Story Stones", emoji: "📖", color: "#ff6fa3", area: "Literacy · Imagination",
+      duration: "25 min",
+      materials: ["8–10 smooth stones","Permanent markers","Cloth bag"],
+      steps: ["Draw a different picture on each stone (sun, dog, house...).","Place all stones in the bag.","Pull out three and make up a story using them.","Take turns adding a sentence each."],
+      prior: { stage: "4 years — Pre-schooler", desc: "Four-year-olds loved being told stories. At five, they can construct one themselves with a beginning, middle and end — a huge leap in narrative thinking." },
+      safety: "Ensure markers are dry before play. Stones should be smooth-edged."
+    }
+  ];
+
+  /* ============================================================
+     Activity generator — keyword pattern matching
+  ============================================================ */
+  const KEYWORDS = {
+    water:    { emoji: "💧", area: "Sensory · Fine motor",
+                materials: ["Shallow tub or tray","Warm water","Cups and jugs","Sponge","Floating toys","Towel"],
+                steps: ["Lay a towel to catch splashes.","Fill the tub with a small amount of warm water.","Demonstrate pouring, then let the child explore.","Add bubbles or food colouring to extend the play."],
+                color: "#4dc3ff", safety: "Never leave a child unsupervised near water." },
+    sensory:  { emoji: "✋", area: "Sensory · Exploration",
+                materials: ["Large tray","Filler (rice, pasta, dried oats)","Scoops and small containers","Hidden small toys"],
+                steps: ["Pour the filler into the tray.","Demonstrate scooping and pouring.","Hide toys for them to find.","Talk about textures and sounds together."],
+                color: "#a37cf0", safety: "Avoid small fillers if child still mouths objects." },
+    messy:    { emoji: "🎨", area: "Sensory · Creativity",
+                materials: ["Old shirt or apron","Wipeable tray","Shaving foam or yogurt paint","Spoons and brushes"],
+                steps: ["Set up over a wipeable floor.","Squirt foam onto the tray.","Let child swirl, scoop and squish.","Add colour drops to mix."],
+                color: "#ff6fa3", safety: "Use taste-safe materials for under-3s." },
+    paint:    { emoji: "🖌️", area: "Creativity · Fine motor",
+                materials: ["Non-toxic paint","Thick paper","Chunky brushes","Apron","Wipeable mat"],
+                steps: ["Tape paper down so it doesn't slide.","Offer one colour at a time.","Let them explore brush, fingers, sponges.","Display the artwork to celebrate."],
+                color: "#ff9a3c", safety: "Use only certified non-toxic paint." },
+    music:    { emoji: "🎵", area: "Music · Auditory",
+                materials: ["Pots and wooden spoons","Shaker (rice in a sealed bottle)","Music to play along to"],
+                steps: ["Set up instruments on the floor.","Start a steady beat together.","Take turns leading the rhythm.","Add singing or movement."],
+                color: "#ffd43b", safety: "Tape shaker lids securely shut." },
+    outdoor:  { emoji: "🌳", area: "Outdoor · Gross motor",
+                materials: ["Small basket","Comfortable shoes","Weather-suitable clothes","Picture checklist"],
+                steps: ["Walk to a green space together.","Look for natural items on the list.","Collect, observe and name each one.","Lay them out at home to talk about."],
+                color: "#5ed9b1", safety: "Teach 'look but don't taste'. Wash hands after." },
+    nature:   { emoji: "🍃", area: "Outdoor · Vocabulary",
+                materials: ["Magnifying glass","Basket","Notebook","Pencil"],
+                steps: ["Choose a small patch of garden or park.","Look closely at one square of ground.","Talk about every plant, bug or stone.","Draw or describe what you saw."],
+                color: "#5ed9b1", safety: "Avoid stinging plants and wash hands afterwards." },
+    dough:    { emoji: "🍪", area: "Sensory · Fine motor",
+                materials: ["Soft play dough","Rolling pin","Cookie cutters","Plastic knife"],
+                steps: ["Set out dough on a wipeable surface.","Show squishing, rolling, pinching.","Add cutters and tools.","Encourage shape and colour naming."],
+                color: "#5ed9b1", safety: "Use taste-safe dough; supervise so it isn't eaten in large amounts." },
+    book:     { emoji: "📖", area: "Literacy · Imagination",
+                materials: ["A favourite picture book","Cosy cushion","Soft toy audience"],
+                steps: ["Snuggle up together.","Read slowly, pointing to pictures.","Pause and ask 'what's next?'.","Let them re-tell the story to a soft toy."],
+                color: "#a37cf0", safety: "" },
+    story:    { emoji: "📖", area: "Literacy · Imagination",
+                materials: ["Story prompts on cards","Paper and crayons","Comfortable space"],
+                steps: ["Pull a prompt at random.","Build a story together one sentence each.","Draw a scene from the story.","Re-tell it at bedtime."],
+                color: "#a37cf0", safety: "" },
+    number:   { emoji: "🔢", area: "Maths · Early numeracy",
+                materials: ["Counters (buttons, pasta, pom-poms)","Number cards 1–10","Small bowls"],
+                steps: ["Lay out number cards in order.","Ask child to put the right number of counters by each.","Count together out loud.","Mix the cards and repeat."],
+                color: "#ffd43b", safety: "Avoid small counters with under-3s." },
+    counting: { emoji: "🔢", area: "Maths · Early numeracy",
+                materials: ["10 chunky counters","Egg box or muffin tin","Number cards 1–10"],
+                steps: ["Pop a number card next to each section.","Count counters into each.","Mix the cards and repeat.","Try counting backwards as a challenge."],
+                color: "#ffd43b", safety: "Choose chunky counters for under-3s." },
+    letter:   { emoji: "🔤", area: "Phonics · Early literacy",
+                materials: ["Paper plates with letters","Marker","Open floor space"],
+                steps: ["Lay letter plates on the floor.","Call out a sound, child hops to the letter.","Switch roles so they call sounds for you.","Stick to letters they already know."],
+                color: "#4dc3ff", safety: "Clear trip hazards from the play area." },
+    phonics:  { emoji: "🔤", area: "Phonics · Early literacy",
+                materials: ["Object basket (apple, ball, cup...)","Letter cards"],
+                steps: ["Pick an object from the basket.","Say its first sound and find the matching letter.","Make a silly sentence with the sound.","Swap roles."],
+                color: "#4dc3ff", safety: "" },
+    build:    { emoji: "🧱", area: "STEM · Problem solving",
+                materials: ["Blocks or recycled boxes","Tape","Small toy to use as a test"],
+                steps: ["Set a challenge — 'a tower taller than teddy'.","Let the child plan and build.","Test it. If it falls, talk about why.","Try a new design together."],
+                color: "#a37cf0", safety: "Supervise tape and small parts." },
+    science:  { emoji: "🔬", area: "STEM · Discovery",
+                materials: ["Clear jars","Water","Drops of food colouring","Pipette or spoon"],
+                steps: ["Fill jars with water.","Add a different colour to each.","Mix two colours and predict what happens.","Record favourites with a drawing."],
+                color: "#5ed9b1", safety: "Food colouring can stain — protect clothes and surfaces." },
+    cooking:  { emoji: "🥣", area: "Life skills · Maths",
+                materials: ["Mixing bowl","Wooden spoon","Pre-measured ingredients in cups"],
+                steps: ["Wash hands together.","Pour each cup into the bowl in turn.","Take turns stirring.","Talk about what each ingredient does."],
+                color: "#ff9a3c", safety: "Avoid hot surfaces; supervise around any sharp tools." },
+    bath:     { emoji: "🛁", area: "Sensory · Routine",
+                materials: ["Bath","Cups, jugs, sponges","Bath crayons (optional)"],
+                steps: ["Run a warm, shallow bath.","Offer one new tool at a time.","Pour and sponge water across the bath.","End with a warm towel cuddle."],
+                color: "#4dc3ff", safety: "Never leave a child unattended in the bath." }
+  };
+
+  /* ============================================================
+     Age-appropriate adjustments (duration, prior stage)
+  ============================================================ */
+  const AGE_DURATION = { 0: "5–10 min", 1: "10–15 min", 2: "15–25 min", 3: "20–30 min", 4: "25–40 min", 5: "30–45 min" };
+
+  const PRIOR_STAGE = {
+    0: { stage: "Newborn reflexes", desc: "Before this stage, sensory experience came from being held, fed and looked at. This activity is an early step into self-directed exploration." },
+    1: { stage: "Baby (0–12 months)", desc: "As a baby, the focus was on watching and being shown. Now the child takes the lead and causes things to happen themselves." },
+    2: { stage: "1 year — Wobbler", desc: "At one, the child explored through grabbing and mouthing. Now they can use simple tools with intention, building wrist and finger control." },
+    3: { stage: "2 years — Tiny explorer", desc: "Two-year-olds explored textures freely. Now they can follow a simple sequence and start to talk about what they see." },
+    4: { stage: "3 years — Curious kid", desc: "At three, play was about doing. Now the child can hold a goal in mind and plan a couple of steps ahead." },
+    5: { stage: "4 years — Pre-schooler", desc: "Pre-schoolers loved imaginative play. By five they can layer in rules, sequences and longer narratives — early formal learning skills." }
+  };
+
+  function generateActivity(prompt, age) {
+    const lower = prompt.toLowerCase();
+    let match = null;
+    let matchedWord = null;
+    for (const word of Object.keys(KEYWORDS)) {
+      if (lower.includes(word)) {
+        match = KEYWORDS[word];
+        matchedWord = word;
+        break;
+      }
+    }
+    // Default fallback
+    if (!match) {
+      match = {
+        emoji: "✨", area: "Open exploration",
+        materials: ["Whatever your child is drawn to today","A clear, safe play space","Open mind and a few minutes"],
+        steps: ["Set out 2–3 interesting items on the floor.","Follow your child's lead — don't direct.","Narrate what they do: 'you're stacking', 'you're shaking'.","Stop when they lose interest, not before."],
+        color: "#a37cf0", safety: ""
+      };
+      matchedWord = "play";
+    }
+
+    // Title generation
+    const cleaned = prompt.trim().replace(/\.$/, "");
+    let title;
+    if (cleaned.length > 0 && cleaned.length < 60) {
+      title = cleaned.replace(/^(i want to |i'd like to |create |make )+/i, "").replace(/\bfor my .*$/i, "").trim();
+      title = title.charAt(0).toUpperCase() + title.slice(1);
+      if (!title) title = matchedWord.charAt(0).toUpperCase() + matchedWord.slice(1) + " play";
+    } else {
+      title = matchedWord.charAt(0).toUpperCase() + matchedWord.slice(1) + " play";
+    }
+
+    return {
+      id: "custom-" + Date.now(),
+      age: age,
+      title: title,
+      emoji: match.emoji,
+      color: match.color,
+      area: match.area,
+      duration: AGE_DURATION[age],
+      materials: match.materials,
+      steps: match.steps,
+      prior: PRIOR_STAGE[age],
+      safety: match.safety,
+      isCustom: true
+    };
+  }
+
+  /* ============================================================
+     Rendering
+  ============================================================ */
+  let currentAge = null;
+  let customActivities = [];
+
+  function renderAges() {
+    const grid = document.getElementById("ageGrid");
+    grid.innerHTML = AGES.map(a => {
+      const count = ACTIVITIES.filter(act => act.age === a.age).length + customActivities.filter(act => act.age === a.age).length;
+      return `
+        <div class="age-tile ${currentAge === a.age ? 'active' : ''}" style="--tile-color: ${a.color}" data-age="${a.age}">
+          <div class="age-emoji">${a.emoji}</div>
+          <div class="age-label">${a.label}</div>
+          <div class="age-sub">${a.sub}</div>
+          <div class="age-count">${count} ${count === 1 ? 'activity' : 'activities'}</div>
+        </div>
+      `;
+    }).join("");
+    grid.querySelectorAll(".age-tile").forEach(tile => {
+      tile.addEventListener("click", () => {
+        const age = parseInt(tile.dataset.age);
+        currentAge = currentAge === age ? null : age;
+        renderAges();
+        renderActivities();
+      });
+    });
+  }
+
+  function renderActivities() {
+    const grid = document.getElementById("activityGrid");
+    const ageDisplay = document.getElementById("ageDisplay");
+    const all = [...ACTIVITIES, ...customActivities];
+    const filtered = currentAge === null ? all : all.filter(a => a.age === currentAge);
+    ageDisplay.textContent = currentAge === null ? "all ages" : AGES.find(a => a.age === currentAge).label;
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="empty" style="grid-column: 1/-1;"><span class="empty-emoji">🌱</span>No activities yet — try the builder below!</div>`;
+      return;
+    }
+    grid.innerHTML = filtered.map(a => `
+      <div class="activity-card" style="--accent: ${a.color}" data-id="${a.id}">
+        <div class="activity-icon">${a.emoji}</div>
+        <div class="activity-title">${a.title}</div>
+        <div class="activity-meta">
+          <span class="chip">${AGES.find(x => x.age === a.age).label}</span>
+          <span class="chip duration">⏱ ${a.duration}</span>
+          <span class="chip area">${a.area}</span>
+          ${a.isCustom ? '<span class="chip" style="background:#ffe5f0;color:#c33677">✨ custom</span>' : ''}
+        </div>
+      </div>
+    `).join("");
+    grid.querySelectorAll(".activity-card").forEach(card => {
+      card.addEventListener("click", () => openModal(card.dataset.id));
+    });
+  }
+
+  function openModal(id) {
+    const all = [...ACTIVITIES, ...customActivities];
+    const activity = all.find(a => String(a.id) === String(id));
+    if (!activity) return;
+    const modal = document.getElementById("modal");
+    document.getElementById("modalHeader").style.background = `linear-gradient(135deg, ${activity.color}55 0%, rgba(255,255,255,0) 100%)`;
+    document.getElementById("modalEmoji").textContent = activity.emoji;
+    document.getElementById("modalTitle").textContent = activity.title;
+    document.getElementById("modalSub").textContent = `${AGES.find(a => a.age === activity.age).label} · ${activity.area}`;
+    const ageLabel = AGES.find(a => a.age === activity.age).label;
+    document.getElementById("modalBody").innerHTML = `
+      <div class="stat-row">
+        <div class="stat"><div class="stat-label">Play time</div><div class="stat-value">⏱ ${activity.duration}</div></div>
+        <div class="stat"><div class="stat-label">Age</div><div class="stat-value">${ageLabel}</div></div>
+        <div class="stat"><div class="stat-label">Focus</div><div class="stat-value" style="font-size:13px">${activity.area}</div></div>
+      </div>
+
+      <div class="modal-section">
+        <h3>🧺 What you'll need</h3>
+        <ul class="materials-list">${activity.materials.map(m => `<li>${m}</li>`).join("")}</ul>
+      </div>
+
+      <div class="modal-section">
+        <h3>▶️ How to play</h3>
+        <ol class="steps-list">${activity.steps.map(s => `<li>${s}</li>`).join("")}</ol>
+      </div>
+
+      <div class="modal-section">
+        <h3>🌱 Links back to</h3>
+        <div class="prior-stage">
+          <div class="prior-stage-label">Earlier development stage</div>
+          <div class="prior-stage-title">${activity.prior.stage}</div>
+          <div class="prior-stage-desc">${activity.prior.desc}</div>
+        </div>
+      </div>
+
+      ${activity.safety ? `<div class="safety-banner">⚠️ ${activity.safety}</div>` : ''}
+    `;
+    modal.classList.add("show");
+  }
+
+  document.getElementById("modalClose").addEventListener("click", () => {
+    document.getElementById("modal").classList.remove("show");
+  });
+  document.getElementById("modal").addEventListener("click", (e) => {
+    if (e.target.id === "modal") document.getElementById("modal").classList.remove("show");
+  });
+
+  /* ============================================================
+     Builder
+  ============================================================ */
+  const SUGGESTIONS = [
+    "Water sensory play for my 2 year old",
+    "Messy paint exploration for my 3 year old",
+    "Letter sound game for my 4 year old",
+    "Music and rhythm play for my 1 year old",
+    "Bridge building challenge for my 5 year old",
+    "Nature treasure hunt for my 3 year old"
+  ];
+
+  function renderSuggestions() {
+    document.getElementById("suggestions").innerHTML = SUGGESTIONS.map(s => `<span class="suggestion">${s}</span>`).join("");
+    document.querySelectorAll(".suggestion").forEach(el => {
+      el.addEventListener("click", () => {
+        document.getElementById("builderInput").value = el.textContent;
+        const match = el.textContent.match(/(\d) year/);
+        if (match) document.getElementById("builderAge").value = match[1];
+      });
+    });
+  }
+
+  document.getElementById("builderBtn").addEventListener("click", () => {
+    const text = document.getElementById("builderInput").value.trim();
+    const age = parseInt(document.getElementById("builderAge").value);
+    if (!text) {
+      document.getElementById("builderInput").focus();
+      return;
+    }
+    const activity = generateActivity(text, age);
+    customActivities.unshift(activity);
+    currentAge = age;
+    renderAges();
+    renderActivities();
+    setTimeout(() => openModal(activity.id), 250);
+    document.getElementById("builderInput").value = "";
+  });
+
+  document.getElementById("builderInput").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+      document.getElementById("builderBtn").click();
+    }
+  });
+
+  /* ============================================================
+     Init
+  ============================================================ */
+  renderAges();
+  renderActivities();
+  renderSuggestions();
+</script>
+</body>
+</html>
