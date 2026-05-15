@@ -206,4 +206,25 @@ These features are planned but not yet built:
 
 ---
 
+## 10. End of Session Checklist
+
+Run through these three steps at the end of every coding session to keep your work saved, your learning recorded, and your documentation up to date.
+
+**Step 1 — Save your work**
+
+Tell Claude:
+> "Commit all changes to GitHub with the message: 'Built: [what you built today]'"
+
+**Step 2 — Update your learning diary**
+
+Tell Claude:
+> "Add to learning-log/notes.md: Today I learned [what clicked today]. Commit with message: 'Learned: [summary]'"
+
+**Step 3 — Update documentation**
+
+Tell Claude:
+> "Update learning-log/documentation.md to reflect what we built today. Commit with message: 'Docs: [what changed]'"
+
+---
+
 *Last updated: May 2026*
