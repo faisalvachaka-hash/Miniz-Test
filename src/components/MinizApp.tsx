@@ -90,6 +90,30 @@ export default function MinizApp() {
       <div className="blob b3" />
 
       <header className="text-center pt-9 pb-4 px-5">
+        {/* Auth nav */}
+        <div className="flex justify-end gap-2 max-w-[1180px] mx-auto mb-4">
+          <a href="/login" style={{
+            background: "white",
+            border: "2px solid #efeaf7",
+            borderRadius: 12,
+            padding: "8px 18px",
+            fontWeight: 800,
+            fontSize: 13,
+            color: "#5d5878",
+            textDecoration: "none",
+          }}>
+            Log In
+          </a>
+          <a href="/signup" className="btn-primary" style={{
+            borderRadius: 12,
+            padding: "8px 18px",
+            fontSize: 13,
+            textDecoration: "none",
+          }}>
+            Sign Up
+          </a>
+        </div>
+
         <div className="logo">
           <div className="logo-dot" />
           <h1>Mini Z and Me</h1>
