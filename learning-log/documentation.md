@@ -38,21 +38,29 @@ Project 1 - Mini Z App/
 │   ├── app/                    ← Each folder here = a page on the website
 │   │   ├── page.tsx            ← The public landing page (/) — marketing, features, CTAs
 │   │   ├── layout.tsx          ← The wrapper that wraps every page (sets font, title, etc.)
+│   │   ├── not-found.tsx       ← The custom 404 "Lost in the woods" page
 │   │   ├── globals.css         ← Global styles — colours, animations, shared CSS classes
 │   │   ├── app/
+│   │   │   ├── layout.tsx      ← Sets the browser tab title for /app
 │   │   │   └── page.tsx        ← The protected activity browser (/app) — age tiles, cards, builder
 │   │   ├── signup/
+│   │   │   ├── layout.tsx      ← Browser tab title
 │   │   │   └── page.tsx        ← The signup page (/signup)
 │   │   ├── login/
+│   │   │   ├── layout.tsx      ← Browser tab title
 │   │   │   └── page.tsx        ← The login page (/login)
 │   │   ├── forgot-password/
+│   │   │   ├── layout.tsx      ← Browser tab title
 │   │   │   └── page.tsx        ← Request a password reset link (/forgot-password)
 │   │   ├── reset-password/
+│   │   │   ├── layout.tsx      ← Browser tab title
 │   │   │   └── page.tsx        ← Set a new password from the email link (/reset-password)
 │   │   ├── onboarding/
+│   │   │   ├── layout.tsx      ← Browser tab title
 │   │   │   └── page.tsx        ← First-time setup — add your first child (/onboarding)
 │   │   └── dashboard/
-│   │       └── page.tsx        ← Saved activities + child profile management (/dashboard)
+│   │       ├── layout.tsx      ← Browser tab title
+│   │       └── page.tsx        ← Library + child profile management + personalised greeting (/dashboard)
 │   │
 │   ├── components/             ← Reusable building blocks used across pages
 │   │   ├── MinizApp.tsx        ← The main activity app (age tiles, cards, builder)
@@ -102,7 +110,11 @@ The homepage is now a **public marketing landing page** — the front door of th
 
 The activity browser is what used to live on the homepage. It is now a **protected page** — only logged-in users can see it. When the page loads, it first checks with Supabase whether there is a logged-in user; if not, it redirects to `/login`. It then loads the user's **child profiles** — if the user has no children yet, it sends them to `/onboarding` to add one. Once inside, a row of **child chips** appears at the top ("Showing for: 👶 Zara · 3"), with an active child highlighted. The matching age tile is pre-selected and the builder dropdown is pre-set to that child's age, but every age tile remains visible and clickable so a parent can switch any time. Clicking another child chip changes the active filter instantly; a dashed **+ Add child** chip links to the dashboard. The header still shows **My Library** (goes to `/dashboard`) and **Log Out**.
 
-Below the chip row, the experience is unchanged: six colourful age tiles, subject filter chips, the activity card grid, modals with full activity details, and the "Build your own activity" tool at the bottom.
+Below the chip row, the experience is unchanged in shape: six colourful age tiles, subject filter chips, the activity card grid, modals with full activity details, and the "Build your own activity" tool at the bottom. A few quality-of-life touches:
+
+- **Subject chip counts** — each subject filter now shows how many activities it contains, e.g. "💧 Water Play (120)"
+- **🎲 Surprise me! button** — a button on the "Activities" row picks a random activity from the current filter (or the whole library if no filter) and opens its modal. Great for indecisive Tuesdays
+- **Tickable steps in the activity modal** — every step under "How to play" is clickable. Tap to mark it done (greys out + strikethrough); tap again to un-tick. A live progress line shows "2 of 4 done — keep going!" → "🎉 All done! Great play." once everything's ticked. The ticks reset when the modal closes — this is a live play-along helper, not a saved progress tracker
 
 **Saving curated activities** — every curated activity card has a small star button in the top-right corner. An outlined star (☆) means the activity isn't in your library yet; a filled star (★) means it is. Clicking the star toggles the saved state instantly (no page reload) and adds a "★ saved" chip to the card. The activity then shows up in your library on the dashboard. Custom activities you built yourself don't show a star — they're always in your library by definition.
 
@@ -128,13 +140,23 @@ The onboarding page is a one-time setup screen for new users. It appears the fir
 
 ### Dashboard — `/dashboard`
 
-The dashboard is a protected page — only logged-in users can see it. When the page loads, it checks for a logged-in user; if none, it redirects to `/login`. The page is now organised into three cards:
+The dashboard is a protected page — only logged-in users can see it. When the page loads, it checks for a logged-in user; if none, it redirects to `/login`. The page is organised into three cards:
 
-1. **Welcome card** — greets the user and shows their email address
-2. **My children card** — lists every child profile (avatar + name + age stage). Each row has an **Edit age** button (inline dropdown) and a **Remove** button (with confirmation). At the top of the card, a **+ Add child** button reveals a small form for name and age. Brand-new users will see an empty state here if they delete all their children
+1. **Welcome card** — a personalised greeting built from the user's child profiles:
+   - No children → "Welcome back!"
+   - One child → "Playing with Zara today?"
+   - Two children → "Playing with Zara & Sam today?"
+   - Three or more → "Playing with Zara, Sam & Mia today?" (Oxford-style joining)
+
+   The user's email appears underneath as small secondary text ("Signed in as you@example.com") so they can still confirm which account they're in
+2. **My children card** — lists every child profile (avatar + name + age stage). Each row has an **Edit** button which switches the row into an inline editor showing both name and age fields, with **Save** and **Cancel** buttons. Enter saves, Escape cancels. There's also a **Remove** button (with confirmation). At the top of the card, a **+ Add child** button reveals a small form for name and age. Brand-new users will see an empty state if they delete all their children
 3. **My library card** — a single merged list of everything in the user's library: activities they've built with the builder (tagged "✨ custom") plus curated activities they've starred (tagged "★ saved"). Every card has an `×` button in the top-right. For a starred curated activity, the `×` simply unsaves it (the activity itself stays in the public library on `/app`). For a custom activity, the `×` asks for confirmation and then permanently deletes it. If the library is empty, an encouraging empty state points the user back to `/app`
 
-There is a **Log Out** button in the top-right and quick links at the bottom that jump back to the activity library or the landing page.
+There is a **Log out** button in the top-right and quick links at the bottom that jump back to the activity library or the landing page.
+
+### 404 Page — anything else
+
+If anyone visits a URL that doesn't exist, they get a warm "🐾 Lost in the woods" paper card instead of Next's default 404. Two buttons: **Back home →** (to `/`) and **Go to activities** (to `/app`). The card uses the same Caveat handwritten font and slight rotation as the rest of the app, so even an error page feels on-brand.
 
 ---
 
@@ -397,6 +419,8 @@ These features are planned but not yet built:
 - **Child profiles** — onboarding screen, active-child chip switcher, pre-filtered age, dashboard management
 - **Save curated activities to library** — star button on each card, unified library view on the dashboard, remove/delete controls
 - **Hand-crafted Montessori-toy redesign** — new warm terracotta + cream palette, handwritten Caveat headings, paper-feel cards with imperfect corners, chunky "wooden block" buttons, brand logo image
+- **Personalised dashboard greeting** — "Playing with Zara today?" instead of "Welcome back, [email]"
+- **Quick wins batch** — 🎲 Surprise me button, subject chip counts, inline edit-name-and-age for children, tickable steps in the activity modal with progress message, per-route browser tab titles, custom 🐾 "Lost in the woods" 404 page
 
 ---
 
@@ -421,4 +445,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — Montessori-toy redesign (warm palette, handwritten headings, paper-cut UI)*
+*Last updated: 16 May 2026 — personalised greeting + quick wins batch (surprise me, chip counts, edit child, tick steps, page titles, 404)*

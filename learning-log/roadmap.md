@@ -11,6 +11,7 @@ Most recent first. Each entry is a feature that's live in the app.
 
 | Date | Feature | Notes |
 |---|---|---|
+| 16 May 2026 | **"Tap each step to tick it off" hint** | Small italic line below "How to play" in the activity modal so users discover that steps are tickable |
 | 16 May 2026 | **Quick wins batch** | 🎲 Surprise me button, subject chip counts, full edit (name + age) for children, tickable steps in the activity modal with progress message, per-route page titles, custom "Lost in the woods" 404 page |
 | 16 May 2026 | **Personalised dashboard greeting** | "Welcome back, [email]" replaced with "Playing with Zara today?" using the active child's name. Handles 0, 1, 2 and 3+ children with Oxford-style joining |
 | 16 May 2026 | **Montessori-toy redesign** | Warm terracotta + cream palette, handwritten Caveat headings, paper-feel cards with imperfect corners, chunky "wooden block" buttons, brand logo image. See `documentation.md` §8 for the full design system |
@@ -81,4 +82,4 @@ Ideas captured but not yet evaluated. Move up the list when a real reason appear
 
 ---
 
-*Last updated: 16 May 2026 — shipped full Quick Wins batch (surprise me, chip counts, edit child, tick steps, page titles, 404)*
+*Last updated: 16 May 2026 — added discoverability hint for tickable steps*
