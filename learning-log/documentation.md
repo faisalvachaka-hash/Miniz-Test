@@ -36,23 +36,37 @@ Project 1 - Mini Z App/
 │
 ├── src/                        ← All the source code lives here
 │   ├── app/                    ← Each folder here = a page on the website
-│   │   ├── page.tsx            ← The homepage (/)
+│   │   ├── page.tsx            ← The public landing page (/) — marketing, features, CTAs
 │   │   ├── layout.tsx          ← The wrapper that wraps every page (sets font, title, etc.)
 │   │   ├── globals.css         ← Global styles — colours, animations, shared CSS classes
+│   │   ├── app/
+│   │   │   └── page.tsx        ← The protected activity browser (/app) — age tiles, cards, builder
 │   │   ├── signup/
 │   │   │   └── page.tsx        ← The signup page (/signup)
 │   │   ├── login/
 │   │   │   └── page.tsx        ← The login page (/login)
+│   │   ├── forgot-password/
+│   │   │   └── page.tsx        ← Request a password reset link (/forgot-password)
+│   │   ├── reset-password/
+│   │   │   └── page.tsx        ← Set a new password from the email link (/reset-password)
 │   │   └── dashboard/
-│   │       └── page.tsx        ← The protected dashboard page (/dashboard)
+│   │       └── page.tsx        ← The protected saved-activities page (/dashboard)
 │   │
 │   ├── components/             ← Reusable building blocks used across pages
-│   │   ├── MinizApp.tsx        ← The main activity app (age tiles, cards, builder, modal)
-│   │   └── AuthLayout.tsx      ← The shared card/background layout used by login and signup
+│   │   ├── MinizApp.tsx        ← The main activity app (age tiles, cards, builder)
+│   │   ├── ActivityModal.tsx   ← The pop-up that shows full details for an activity
+│   │   └── AuthLayout.tsx      ← The shared card/background layout used by all auth pages
 │   │
 │   └── lib/                    ← Shared utilities and connections
 │       ├── supabase.ts         ← Creates the connection to Supabase (used by all auth pages)
-│       └── data.ts             ← All the activity content, age groups, keywords, and the activity generator function
+│       └── data.ts             ← Type definitions, age groups, keywords, and the activity generator function
+│
+├── supabase/                   ← SQL files to seed the activities database
+│   ├── seed.sql                ← Original 13 curated activities + table CREATE + RLS policies
+│   ├── seed_water_play.sql     ← 120 Water Play activities (ages 0–5, 20 per age)
+│   ├── seed_sand_play.sql      ← 120 Sand Play activities (ages 0–5, 20 per age)
+│   ├── seed_arts_crafts.sql    ← 120 Arts & Crafts activities (ages 0–5, 20 per age)
+│   └── seed_nature.sql         ← 120 Outdoor / Nature activities (ages 0–5, 20 per age)
 │
 ├── prototype/
 │   └── index.html              ← The original single-file HTML prototype (kept for reference)
@@ -74,9 +88,13 @@ Project 1 - Mini Z App/
 
 ## 4. Pages Built So Far
 
-### Homepage — `/`
+### Landing Page — `/`
 
-The homepage is the main activity browser. It shows six colourful age tiles across the top (0 years through to 5 years). Clicking a tile filters the activity cards below to only show activities for that age group. Each activity card shows the activity name, age range, focus area (e.g. "Sensory · Fine motor"), and how long it takes. Clicking a card opens a pop-up modal with full details: a materials list, step-by-step instructions, expected duration, and a section explaining how the activity links to an earlier stage of development. At the bottom of the page there is a "Build your own activity" tool — the parent types in a play idea (e.g. "water sensory play for my 2 year old"), picks the age, and the app generates a full activity plan. In the top-right corner there are **Log In** and **Sign Up** buttons linking to the auth pages.
+The homepage is now a **public marketing landing page** — the front door of the product, designed to convert new visitors into signups. It starts with a hero section ("Turn playtime into learning time") and two big call-to-action buttons: **Get started free** (goes to `/signup`) and **Log in** (goes to `/login`). Below the hero, there is a "How it works" section with three numbered steps, a features grid that highlights what the app offers (expert-curated activities, subject filters, build-your-own, save to library), a preview strip showing three sample activity cards, a development-rooted section explaining the educational philosophy, and a final gradient CTA banner. The page ends with a footer. This page does **not** require login.
+
+### Activity Browser — `/app`
+
+The activity browser is what used to live on the homepage. It is now a **protected page** — only logged-in users can see it. When the page loads, it first checks with Supabase whether there is a logged-in user; if not, it redirects to `/login`. Once inside, the user sees six colourful age tiles across the top (0 years through to 5 years). Clicking a tile filters the activity cards below. Each activity card shows the activity name, age range, focus area (e.g. "Sensory · Fine motor"), and how long it takes. Clicking a card opens a pop-up modal with full details: a materials list, step-by-step instructions, expected duration, and a section explaining how the activity links to an earlier stage of development. At the bottom of the page there is a "Build your own activity" tool — the parent types in a play idea (e.g. "water sensory play for my 2 year old"), picks the age, and the app generates a full activity plan. The header has been updated to show **My Library** (goes to `/dashboard`) and **Log Out** (signs out and returns to the landing page), instead of the old Log In / Sign Up buttons.
 
 ### Signup Page — `/signup`
 
@@ -84,11 +102,19 @@ The signup page is where a new user creates their account. It shows a simple for
 
 ### Login Page — `/login`
 
-The login page is where existing users sign in. It has the same clean card design as signup. The user enters their email and password and clicks **Log In**. If the details are correct, Supabase confirms the session and the app automatically takes the user to the dashboard. If the details are wrong, an error message appears below the form. There is a link at the bottom for new users to go to the signup page instead.
+The login page is where existing users sign in. It has the same clean card design as signup. The user enters their email and password and clicks **Log In**. If the details are correct, Supabase confirms the session and the app automatically takes the user to `/app` (the activity browser). If the details are wrong, an error message appears below the form. There are two links at the bottom: one to the signup page for new users, and a **Forgot password?** link to start the password reset flow.
+
+### Forgot Password — `/forgot-password`
+
+This page is where a user can request a password reset link if they have forgotten their password. The user enters their email address and clicks **Send reset link**. The app calls `supabase.auth.resetPasswordForEmail()` which sends an email containing a special link. The page then switches to a "Check your inbox 📬" confirmation screen. The link in the email takes the user to `/reset-password`.
+
+### Reset Password — `/reset-password`
+
+When the user clicks the email link, they land on `/reset-password`. The page reads a special `code` from the URL and exchanges it with Supabase for a temporary session that lets the user update their password. The user then enters their new password twice and submits. If successful, the user is automatically logged in and taken to `/app`. If the link has expired or is invalid, an error screen appears with a button to request a new link.
 
 ### Dashboard — `/dashboard`
 
-The dashboard is a protected page — only logged-in users can see it. When the page loads, the first thing it does is ask Supabase "is there a logged-in user right now?" If the answer is no, the app immediately redirects to `/login`. If the answer is yes, the page loads and shows a welcome message with the user's email address, along with quick links back to the activity library. There is a **Log Out** button in the top-right corner — clicking it tells Supabase to end the session and sends the user back to the login page.
+The dashboard is a protected page — only logged-in users can see it. When the page loads, it checks for a logged-in user; if none, it redirects to `/login`. If there is a session, the page loads and shows a welcome message with the user's email address, along with quick links back to the activity library. There is a **Log Out** button in the top-right corner — clicking it tells Supabase to end the session and sends the user back to the login page.
 
 ---
 
@@ -118,11 +144,45 @@ Authentication is the system that handles signing up, logging in, and logging ou
 **Logging out:**
 1. The user clicks the Log Out button
 2. The app calls `supabase.auth.signOut()` which deletes the session
-3. The app redirects to `/login`
+3. The app redirects to `/` (the landing page) or `/login` depending on where the user was
+
+**Forgotten password (reset flow):**
+1. On `/login` the user clicks **Forgot password?** and lands on `/forgot-password`
+2. The user types their email and the app calls `supabase.auth.resetPasswordForEmail()`
+3. Supabase emails them a special link containing a one-time `code`
+4. Clicking the link sends them to `/reset-password?code=…`
+5. The app calls `supabase.auth.exchangeCodeForSession(code)` which exchanges the code for a temporary session
+6. The user types a new password and the app calls `supabase.auth.updateUser({ password })`
+7. The user is automatically logged in and sent to `/app`
 
 ---
 
-## 6. Environment Variables
+## 6. The Activity Library
+
+The app's activity content lives in a Supabase database table called `activities`. Every card the user sees in the activity browser comes from this table. There are two kinds of activities:
+
+- **Curated activities** — official content shipped with the app. These have `is_custom = false` and `user_id = NULL`. They are visible to every user.
+- **Custom activities** — activities a logged-in user creates using the "Build your own" tool. These have `is_custom = true` and `user_id = <the user's id>`. Row-Level Security (RLS) policies in Supabase make sure users only see their own custom activities, never anyone else's.
+
+**Seed files (in `/supabase/`)**
+
+The library is built up by running SQL "seed" files in the Supabase SQL Editor. Each one inserts a batch of curated activities:
+
+| Seed file | Subject | Rows |
+|---|---|---|
+| `seed.sql` | Mixed — original 13 curated activities + table CREATE + RLS policies | 13 |
+| `seed_water_play.sql` | Water Play 💧 | 120 (ages 0–5, 20 per age) |
+| `seed_sand_play.sql` | Sand Play 🏖️ | 120 (ages 0–5, 20 per age) |
+| `seed_arts_crafts.sql` | Arts & Crafts 🎨 | 120 (ages 0–5, 20 per age) |
+| `seed_nature.sql` | Outdoor 🌿 | 120 (ages 0–5, 20 per age) |
+
+In total there are around **493 curated activities** across six subjects (Science, Maths, Writing, Sensory Play, Arts & Crafts, Outdoor, Water Play, Sand Play).
+
+**Subject chips and emojis** — the activity browser auto-discovers which subjects exist in the database and shows them as filter chips at the top. A small lookup table in `MinizApp.tsx` called `SUBJECT_EMOJIS` maps each subject name to the emoji that appears on its chip. New subjects appear automatically — if no emoji is mapped, a default 📚 is used.
+
+---
+
+## 7. Environment Variables
 
 Environment variables are settings that are kept secret and stored locally on your machine — they are **never uploaded to GitHub**. This project uses a file called `.env.local` (in the root of the project) to store them.
 
@@ -137,7 +197,7 @@ The `.gitignore` file contains the rule `.env*` which ensures this file is alway
 
 ---
 
-## 7. How to Run the App Locally
+## 8. How to Run the App Locally
 
 Follow these steps to run the project on your own computer:
 
@@ -175,7 +235,7 @@ To stop the server, press `Ctrl + C` in the terminal.
 
 ---
 
-## 8. How to Save Changes to GitHub
+## 9. How to Save Changes to GitHub
 
 Every time you finish a piece of work, save it to GitHub with these three commands:
 
@@ -191,22 +251,29 @@ git push
 
 ---
 
-## 9. What Still Needs to Be Built
+## 10. What Still Needs to Be Built
 
 These features are planned but not yet built:
 
 | Feature | Description |
 |---|---|
-| **Saved activities** | When a logged-in user creates a custom activity in the builder, save it to Supabase so it persists across sessions and devices |
 | **Child profiles** | Let parents add their child's name and age so the app can personalise the experience |
-| **Personal activity library** | A section of the dashboard showing only the activities saved by that user |
 | **Activity images** | Add illustrations or photos to each activity card to make it more visually engaging |
 | **Deployment** | Deploy the app to Vercel (free) so it has a real public web address anyone can visit |
-| **Password reset** | A "Forgot password?" flow so users can recover their account via email |
+| **Email verification on signup** | Currently the signup flow shows a "check your inbox" screen, but verification could be polished — e.g. resending the link, custom email design |
+| **Activity favourites** | Let users heart/star curated activities as well as save custom ones |
+
+✅ **Recently completed (May 2026):**
+- Public marketing landing page at `/`
+- Protected activity browser moved to `/app`
+- Password reset flow (`/forgot-password` and `/reset-password`)
+- 480 new curated activities across four new subject seeds (Water Play, Sand Play, expanded Arts & Crafts, expanded Outdoor)
+- Saving custom activities to Supabase (per-user with RLS)
+- Personal activity library on `/dashboard`
 
 ---
 
-## 10. End of Session Checklist
+## 11. End of Session Checklist
 
 Run through these three steps at the end of every coding session to keep your work saved, your learning recorded, and your documentation up to date.
 
@@ -227,4 +294,4 @@ Tell Claude:
 
 ---
 
-*Last updated: May 2026*
+*Last updated: 16 May 2026*
