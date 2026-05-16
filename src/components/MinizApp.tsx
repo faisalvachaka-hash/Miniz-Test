@@ -67,8 +67,9 @@ export default function MinizApp() {
         : null;
       const initial = list.find((c) => c.id === stored) ?? list[0];
       setActiveChildId(initial.id);
-      setCurrentAge(initial.age);
       setBuilderAge(initial.age);
+      // Note: currentAge is intentionally NOT set here. Activities stay hidden
+      // until the user explicitly picks an age tile (or clicks a child chip).
     });
   }, [router]);
 
@@ -122,9 +123,13 @@ export default function MinizApp() {
 
   const filteredActivities = useMemo(
     () =>
-      allActivities
-        .filter((a) => currentAge === null || a.age === currentAge)
-        .filter((a) => currentSubject === null || a.subject === currentSubject),
+      // Require an age to be selected — keeps the page calm until a parent
+      // explicitly picks an age to browse
+      currentAge === null
+        ? []
+        : allActivities
+            .filter((a) => a.age === currentAge)
+            .filter((a) => currentSubject === null || a.subject === currentSubject),
     [allActivities, currentAge, currentSubject]
   );
 
@@ -485,10 +490,38 @@ export default function MinizApp() {
               </div>
             ))}
           </div>
+        ) : currentAge === null ? (
+          <div
+            className="text-center py-16 px-6"
+            style={{
+              color: "var(--ink-soft)",
+              fontWeight: 700,
+              background: "var(--paper)",
+              border: "3px dashed var(--paper-edge)",
+              borderRadius: "var(--r2)",
+              maxWidth: 520,
+              margin: "0 auto",
+            }}
+          >
+            <span className="block" style={{ fontSize: 64, lineHeight: 1, marginBottom: 12 }}>☝️</span>
+            <div style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 30,
+              fontWeight: 700,
+              color: "var(--ink)",
+              lineHeight: 1.1,
+              marginBottom: 6,
+            }}>
+              Pick an age to begin
+            </div>
+            <p style={{ fontSize: 14, fontWeight: 600, color: "var(--ink-soft)", margin: 0 }}>
+              Tap one of the age blocks above to see activities for that stage.
+            </p>
+          </div>
         ) : filteredActivities.length === 0 ? (
           <div className="text-center py-12" style={{ color: "var(--ink-soft)", fontWeight: 700 }}>
             <span className="block text-6xl mb-2.5">🌱</span>
-            No activities yet — try the builder below!
+            No activities for this filter yet — try the builder below!
           </div>
         ) : (
           <div
