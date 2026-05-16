@@ -32,6 +32,7 @@ export default function MinizApp() {
   const [curatedActivities, setCuratedActivities] = useState<Activity[]>([]);
   const [customActivities, setCustomActivities] = useState<Activity[]>([]);
   const [loadingActivities, setLoadingActivities] = useState(true);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [children, setChildren] = useState<Child[]>([]);
   const [activeChildId, setActiveChildId] = useState<string | null>(null);
   const [currentAge, setCurrentAge] = useState<AgeKey | null>(null);
@@ -93,18 +94,23 @@ export default function MinizApp() {
       });
   }, []);
 
-  // Fetch user's saved custom activities if logged in
+  // Fetch user's saved custom activities + saved curated-activity IDs if logged in
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
-      supabase
-        .from("activities")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .then(({ data }) => {
-          if (data) setCustomActivities(data.map(mapActivityFromDB));
-        });
+      const [{ data: customs }, { data: saves }] = await Promise.all([
+        supabase
+          .from("activities")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("saved_activities")
+          .select("activity_id")
+          .eq("user_id", user.id),
+      ]);
+      if (customs) setCustomActivities(customs.map(mapActivityFromDB));
+      if (saves) setSavedIds(new Set(saves.map((s) => s.activity_id as string)));
     });
   }, []);
 
@@ -164,6 +170,46 @@ export default function MinizApp() {
     setActiveChildId(child.id);
     setCurrentAge(child.age);
     setBuilderAge(child.age);
+  }
+
+  async function handleToggleSave(activityId: string | number, event: React.MouseEvent) {
+    event.stopPropagation();
+    const id = String(activityId);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const wasSaved = savedIds.has(id);
+    // Optimistic update
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (wasSaved) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+    if (wasSaved) {
+      const { error } = await supabase
+        .from("saved_activities")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("activity_id", id);
+      if (error) {
+        // Rollback
+        setSavedIds((prev) => new Set(prev).add(id));
+      }
+    } else {
+      const { error } = await supabase
+        .from("saved_activities")
+        .insert({ user_id: user.id, activity_id: id });
+      if (error) {
+        // Rollback
+        setSavedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+      }
+    }
   }
 
   const activeChild = children.find((c) => c.id === activeChildId) ?? null;
@@ -425,36 +471,73 @@ export default function MinizApp() {
             className="grid gap-[18px] mt-[18px]"
             style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}
           >
-            {filteredActivities.map((a) => (
-              <div
-                key={a.id}
-                className="activity-card"
-                style={{ ["--accent" as string]: a.color }}
-                onClick={() => setSelectedId(a.id)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setSelectedId(a.id);
-                  }
-                }}
-              >
-                <div className="activity-icon">{a.emoji}</div>
-                <div className="activity-title">{a.title}</div>
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  <span className="chip">{AGES.find((x) => x.age === a.age)?.label}</span>
-                  <span className="chip duration">⏱ {a.duration}</span>
-                  <span className="chip area">{a.area}</span>
-                  {a.easeOfPrep && (
-                    <span className="chip" style={{ background: "#edf7ed", color: "#1a6e2e" }}>
-                      ⚡ Prep {a.easeOfPrep}/10
-                    </span>
+            {filteredActivities.map((a) => {
+              const isSaved = savedIds.has(String(a.id));
+              return (
+                <div
+                  key={a.id}
+                  className="activity-card"
+                  style={{ ["--accent" as string]: a.color, position: "relative" }}
+                  onClick={() => setSelectedId(a.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setSelectedId(a.id);
+                    }
+                  }}
+                >
+                  {!a.isCustom && (
+                    <button
+                      onClick={(e) => handleToggleSave(a.id, e)}
+                      aria-label={isSaved ? "Remove from library" : "Save to library"}
+                      title={isSaved ? "Remove from library" : "Save to library"}
+                      style={{
+                        position: "absolute",
+                        top: 12,
+                        right: 12,
+                        width: 36,
+                        height: 36,
+                        borderRadius: 12,
+                        border: "none",
+                        background: isSaved ? "#fff4b8" : "rgba(255,255,255,0.9)",
+                        cursor: "pointer",
+                        fontSize: 18,
+                        lineHeight: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                        transition: "transform 0.15s",
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                    >
+                      {isSaved ? "★" : "☆"}
+                    </button>
                   )}
-                  {a.isCustom && <span className="chip custom">✨ custom</span>}
+                  <div className="activity-icon">{a.emoji}</div>
+                  <div className="activity-title">{a.title}</div>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    <span className="chip">{AGES.find((x) => x.age === a.age)?.label}</span>
+                    <span className="chip duration">⏱ {a.duration}</span>
+                    <span className="chip area">{a.area}</span>
+                    {a.easeOfPrep && (
+                      <span className="chip" style={{ background: "#edf7ed", color: "#1a6e2e" }}>
+                        ⚡ Prep {a.easeOfPrep}/10
+                      </span>
+                    )}
+                    {a.isCustom && <span className="chip custom">✨ custom</span>}
+                    {isSaved && !a.isCustom && (
+                      <span className="chip" style={{ background: "#fff4b8", color: "#8a6d00" }}>
+                        ★ saved
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 

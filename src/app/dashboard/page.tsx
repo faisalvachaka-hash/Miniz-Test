@@ -7,11 +7,13 @@ import { mapActivityFromDB, AGES, type Activity, type AgeKey, type Child } from 
 import { ActivityModal } from "@/components/ActivityModal";
 import type { User } from "@supabase/supabase-js";
 
+type LibraryEntry = { activity: Activity; source: "custom" | "saved" };
+
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activities, setActivities] = useState<Activity[]>([]);
+  const [library, setLibrary] = useState<LibraryEntry[]>([]);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 
   const [children, setChildren] = useState<Child[]>([]);
@@ -28,12 +30,18 @@ export default function DashboardPage() {
         return;
       }
       setUser(data.user);
+      const uid = data.user.id;
 
-      const [{ data: rows }, { data: kids }] = await Promise.all([
+      const [{ data: customs }, { data: saves }, { data: kids }] = await Promise.all([
         supabase
           .from("activities")
           .select("*")
-          .eq("user_id", data.user.id)
+          .eq("user_id", uid)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("saved_activities")
+          .select("activity_id, created_at, activities(*)")
+          .eq("user_id", uid)
           .order("created_at", { ascending: false }),
         supabase
           .from("children")
@@ -41,11 +49,44 @@ export default function DashboardPage() {
           .order("created_at", { ascending: true }),
       ]);
 
-      if (rows) setActivities(rows.map(mapActivityFromDB));
+      const entries: LibraryEntry[] = [];
+      if (customs) {
+        for (const row of customs) {
+          entries.push({ activity: mapActivityFromDB(row), source: "custom" });
+        }
+      }
+      if (saves) {
+        for (const row of saves as Array<{ activities: Record<string, unknown> | null }>) {
+          if (row.activities) {
+            entries.push({ activity: mapActivityFromDB(row.activities), source: "saved" });
+          }
+        }
+      }
+      setLibrary(entries);
       if (kids) setChildren(kids as Child[]);
       setLoading(false);
     });
   }, [router]);
+
+  async function handleRemoveCustom(activity: Activity) {
+    if (!confirm(`Delete "${activity.title}"? This cannot be undone.`)) return;
+    const { error } = await supabase.from("activities").delete().eq("id", activity.id);
+    if (!error) {
+      setLibrary((prev) => prev.filter((e) => String(e.activity.id) !== String(activity.id)));
+    }
+  }
+
+  async function handleUnsave(activity: Activity) {
+    if (!user) return;
+    const { error } = await supabase
+      .from("saved_activities")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("activity_id", activity.id);
+    if (!error) {
+      setLibrary((prev) => prev.filter((e) => String(e.activity.id) !== String(activity.id)));
+    }
+  }
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -322,23 +363,23 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Saved activities */}
+        {/* My library */}
         <div className="bg-white rounded-3xl p-8 shadow-xl mb-6">
           <h2 className="font-black text-xl mb-1" style={{ color: "#2b2740" }}>
-            Your saved activities
+            My library
           </h2>
           <p className="font-semibold mb-6" style={{ color: "#5d5878", fontSize: 14 }}>
-            Activities you&apos;ve created with the builder
+            Activities you&apos;ve built with the builder, plus curated activities you&apos;ve starred.
           </p>
 
-          {activities.length === 0 ? (
+          {library.length === 0 ? (
             <div className="text-center py-10" style={{ color: "#9b93b8" }}>
               <div className="text-5xl mb-3">🌱</div>
-              <p className="font-semibold">No saved activities yet.</p>
+              <p className="font-semibold">Your library is empty.</p>
               <p className="font-semibold text-sm mt-1">
                 Head to the{" "}
                 <a href="/app" style={{ color: "#a37cf0" }}>activity library</a>
-                {" "}and use the builder to create your first one!
+                {" "}and star activities you love, or use the builder to create your own.
               </p>
             </div>
           ) : (
@@ -346,11 +387,11 @@ export default function DashboardPage() {
               className="grid gap-4"
               style={{ gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}
             >
-              {activities.map((a) => (
+              {library.map(({ activity: a, source }) => (
                 <div
                   key={String(a.id)}
                   className="activity-card"
-                  style={{ ["--accent" as string]: a.color }}
+                  style={{ ["--accent" as string]: a.color, position: "relative" }}
                   onClick={() => setSelectedActivity(a)}
                   role="button"
                   tabIndex={0}
@@ -361,12 +402,51 @@ export default function DashboardPage() {
                     }
                   }}
                 >
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (source === "custom") handleRemoveCustom(a);
+                      else handleUnsave(a);
+                    }}
+                    aria-label={source === "custom" ? "Delete activity" : "Remove from library"}
+                    title={source === "custom" ? "Delete activity" : "Remove from library"}
+                    style={{
+                      position: "absolute",
+                      top: 12,
+                      right: 12,
+                      width: 32,
+                      height: 32,
+                      borderRadius: 10,
+                      border: "none",
+                      background: "rgba(255,255,255,0.95)",
+                      cursor: "pointer",
+                      fontSize: 16,
+                      lineHeight: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                      color: "#d23069",
+                      fontWeight: 800,
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#ffe6ee")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.95)")}
+                  >
+                    ×
+                  </button>
                   <div className="activity-icon">{a.emoji}</div>
                   <div className="activity-title">{a.title}</div>
                   <div className="flex flex-wrap gap-1.5 mt-3">
                     <span className="chip">{AGES.find((x) => x.age === a.age)?.label}</span>
                     <span className="chip duration">⏱ {a.duration}</span>
                     <span className="chip area">{a.area}</span>
+                    {source === "custom" ? (
+                      <span className="chip custom">✨ custom</span>
+                    ) : (
+                      <span className="chip" style={{ background: "#fff4b8", color: "#8a6d00" }}>
+                        ★ saved
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
