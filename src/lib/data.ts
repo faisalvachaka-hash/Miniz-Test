@@ -30,6 +30,12 @@ export type Activity = {
   isCustom?: boolean;
 };
 
+export type Child = {
+  id: string;
+  name: string;
+  age: AgeKey;
+};
+
 export const AGES: AgeGroup[] = [
   { age: 0, label: "0 years", sub: "Baby", emoji: "👶", color: "#ff6fa3" },
   { age: 1, label: "1 year", sub: "Wobbler", emoji: "🍼", color: "#ff9a3c" },

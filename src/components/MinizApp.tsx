@@ -9,6 +9,7 @@ import {
   mapActivityFromDB,
   type Activity,
   type AgeKey,
+  type Child,
 } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
 import { ActivityModal } from "@/components/ActivityModal";
@@ -24,11 +25,15 @@ const SUBJECT_EMOJIS: Record<string, string> = {
   "Sand Play":     "🏖️",
 };
 
+const ACTIVE_CHILD_KEY = "miniz_active_child_id";
+
 export default function MinizApp() {
   const router = useRouter();
   const [curatedActivities, setCuratedActivities] = useState<Activity[]>([]);
   const [customActivities, setCustomActivities] = useState<Activity[]>([]);
   const [loadingActivities, setLoadingActivities] = useState(true);
+  const [children, setChildren] = useState<Child[]>([]);
+  const [activeChildId, setActiveChildId] = useState<string | null>(null);
   const [currentAge, setCurrentAge] = useState<AgeKey | null>(null);
   const [currentSubject, setCurrentSubject] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
@@ -37,12 +42,40 @@ export default function MinizApp() {
   const [saving, setSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Auth guard — redirect to login if not logged in
+  // Auth guard + children fetch — redirect to login if not logged in, to onboarding if no children
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user) router.push("/login");
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) {
+        router.push("/login");
+        return;
+      }
+      const { data: kids } = await supabase
+        .from("children")
+        .select("id, name, age")
+        .order("created_at", { ascending: true });
+      if (!kids || kids.length === 0) {
+        router.push("/onboarding");
+        return;
+      }
+      const list = kids as Child[];
+      setChildren(list);
+
+      const stored = typeof window !== "undefined"
+        ? window.localStorage.getItem(ACTIVE_CHILD_KEY)
+        : null;
+      const initial = list.find((c) => c.id === stored) ?? list[0];
+      setActiveChildId(initial.id);
+      setCurrentAge(initial.age);
+      setBuilderAge(initial.age);
     });
   }, [router]);
+
+  // Persist the active child to localStorage when it changes
+  useEffect(() => {
+    if (activeChildId && typeof window !== "undefined") {
+      window.localStorage.setItem(ACTIVE_CHILD_KEY, activeChildId);
+    }
+  }, [activeChildId]);
 
   // Fetch curated activities from Supabase on mount
   useEffect(() => {
@@ -124,6 +157,16 @@ export default function MinizApp() {
   function handleAgeClick(age: AgeKey) {
     setCurrentAge((prev) => (prev === age ? null : age));
   }
+
+  function handleChildSwitch(childId: string) {
+    const child = children.find((c) => c.id === childId);
+    if (!child) return;
+    setActiveChildId(child.id);
+    setCurrentAge(child.age);
+    setBuilderAge(child.age);
+  }
+
+  const activeChild = children.find((c) => c.id === activeChildId) ?? null;
 
   function handleSubjectClick(subject: string) {
     setCurrentSubject((prev) => (prev === subject ? null : subject));
@@ -240,11 +283,58 @@ export default function MinizApp() {
           <h1>Mini Z and Me</h1>
         </div>
         <div className="mt-3.5 text-[var(--soft-ink)] text-[15px] font-semibold">
-          Playful learning for tiny humans · ages 0 to 5
+          {activeChild
+            ? `Playing with ${activeChild.name} · age ${activeChild.age}`
+            : "Playful learning for tiny humans · ages 0 to 5"}
         </div>
       </header>
 
       <main className="max-w-[1180px] mx-auto px-5 pb-20">
+        {children.length > 0 && (
+          <div className="flex items-center justify-center gap-2 flex-wrap mt-2 mb-2">
+            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#9b93b8" }}>
+              Showing for:
+            </span>
+            {children.map((c) => {
+              const active = c.id === activeChildId;
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => handleChildSwitch(c.id)}
+                  className="chip"
+                  style={{
+                    fontSize: 13,
+                    padding: "7px 16px",
+                    cursor: "pointer",
+                    border: active ? "2px solid #a37cf0" : "2px solid transparent",
+                    background: active ? "#f0ebff" : "white",
+                    color: active ? "#6b42c8" : "#5d5878",
+                    fontFamily: "inherit",
+                    fontWeight: 800,
+                  }}
+                >
+                  {AGES.find((a) => a.age === c.age)?.emoji} {c.name} · {c.age}
+                </button>
+              );
+            })}
+            <a
+              href="/dashboard"
+              className="chip"
+              style={{
+                fontSize: 13,
+                padding: "7px 14px",
+                background: "white",
+                color: "#a37cf0",
+                fontWeight: 800,
+                textDecoration: "none",
+                border: "2px dashed #efeaf7",
+              }}
+            >
+              + Add child
+            </a>
+          </div>
+        )}
+
         <div className="section-title">
           Pick an age <span className="pill">tap to explore</span>
         </div>

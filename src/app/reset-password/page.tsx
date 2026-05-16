@@ -46,9 +46,15 @@ export default function ResetPasswordPage() {
     if (error) {
       setError(error.message);
       setLoading(false);
-    } else {
-      router.push("/app");
+      return;
     }
+
+    const { data: kids } = await supabase
+      .from("children")
+      .select("id")
+      .limit(1);
+
+    router.push(kids && kids.length > 0 ? "/app" : "/onboarding");
   }
 
   if (!ready && !error) {

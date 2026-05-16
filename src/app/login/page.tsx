@@ -23,8 +23,19 @@ export default function LoginPage() {
     if (error) {
       setError(error.message);
       setLoading(false);
-    } else {
+      return;
+    }
+
+    // Check whether this user already has a child profile
+    const { data: kids } = await supabase
+      .from("children")
+      .select("id")
+      .limit(1);
+
+    if (kids && kids.length > 0) {
       router.push("/app");
+    } else {
+      router.push("/onboarding");
     }
   }
 
