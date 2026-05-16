@@ -2,56 +2,66 @@ export default function LandingPage() {
   const features = [
     {
       emoji: "🎯",
-      title: "13 expert-curated activities",
-      desc: "Every activity is designed by early years specialists and rooted in child development research.",
+      title: "Hundreds of curated activities",
+      desc: "Every activity is designed around early-years development, with materials and step-by-step play.",
+      accent: "var(--sage)",
     },
     {
       emoji: "🔬",
       title: "Filter by subject",
-      desc: "Browse Science, Maths, Sensory Play, Outdoor activities and more — all in one place.",
+      desc: "Sensory, science, water, sand, arts & crafts, outdoor — find the right kind of play.",
+      accent: "var(--mustard)",
     },
     {
       emoji: "✨",
-      title: "Build your own activity",
-      desc: "Type a play idea and get a full activity plan — materials, steps, and learning links — instantly.",
+      title: "Build your own",
+      desc: "Type a play idea and we'll generate a full activity plan tailored to your child's age.",
+      accent: "var(--clay)",
     },
     {
       emoji: "💾",
-      title: "Save to your library",
-      desc: "Your custom activities are saved to your account so you can find them again on any device.",
+      title: "Save what you love",
+      desc: "Star activities to your library, build your own, and find them again on any device.",
+      accent: "var(--dusty-rose)",
     },
   ];
 
   const previews = [
-    { emoji: "💧", title: "Water Sensory Play", age: "2 years", area: "Sensory Play", duration: "20–30 min", color: "#4dc3ff" },
-    { emoji: "🍂", title: "Nature Treasure Hunt", age: "3 years", area: "Outdoor", duration: "30–45 min", color: "#5ed9b1" },
-    { emoji: "🌉", title: "Build a Bridge Challenge", age: "5 years", area: "Science", duration: "30–60 min", color: "#a37cf0" },
+    { emoji: "💧", title: "Water Sensory Play", age: "2 years", area: "Sensory Play", duration: "20–30 min", color: "var(--dusty-blue)" },
+    { emoji: "🍂", title: "Nature Treasure Hunt", age: "3 years", area: "Outdoor", duration: "30–45 min", color: "var(--sage)" },
+    { emoji: "🌉", title: "Build a Bridge", age: "5 years", area: "Science", duration: "30–60 min", color: "var(--mustard)" },
   ];
 
   const steps = [
-    { num: "1", label: "Pick your child's age", desc: "From newborn to 5 years — we've got every stage covered." },
-    { num: "2", label: "Browse or build an activity", desc: "Choose from curated ideas or create your own in seconds." },
-    { num: "3", label: "Play, learn and grow", desc: "Every activity links back to a key developmental milestone." },
+    { num: "1", label: "Pick your child's age", desc: "From newborn to 5 years — every stage covered." },
+    { num: "2", label: "Browse or build an activity", desc: "Curated ideas, or create your own in seconds." },
+    { num: "3", label: "Play, learn and grow", desc: "Every activity ties back to a milestone." },
+  ];
+
+  const developmentBadges = [
+    { emoji: "🧠", label: "Cognitive growth", accent: "var(--clay)" },
+    { emoji: "🤝", label: "Social skills", accent: "var(--sage)" },
+    { emoji: "✋", label: "Fine motor", accent: "var(--mustard)" },
+    { emoji: "🗣️", label: "Language", accent: "var(--dusty-rose)" },
   ];
 
   return (
-    <div style={{ fontFamily: "Nunito, sans-serif", overflowX: "hidden" }}>
+    <div style={{ overflowX: "hidden" }}>
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #fff1f6 0%, #f0f9ff 50%, #fef8e1 100%)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "60px 24px 80px",
+        padding: "120px 24px 80px",
         position: "relative",
         textAlign: "center",
       }}>
-        <div className="blob b1" style={{ opacity: 0.6 }} />
-        <div className="blob b2" style={{ opacity: 0.5 }} />
-        <div className="blob b3" style={{ opacity: 0.4 }} />
+        <div className="blob b1" />
+        <div className="blob b2" />
+        <div className="blob b3" />
 
         {/* Nav */}
         <nav style={{
@@ -59,144 +69,179 @@ export default function LandingPage() {
           top: 24,
           right: 28,
           display: "flex",
-          gap: 10,
+          gap: 12,
+          zIndex: 2,
         }}>
-          <a href="/login" style={{
-            background: "white",
-            border: "2px solid #efeaf7",
-            borderRadius: 12,
-            padding: "8px 20px",
-            fontWeight: 800,
-            fontSize: 13,
-            color: "#5d5878",
-            textDecoration: "none",
-          }}>
-            Log In
+          <a href="/login" className="btn-secondary" style={{ textDecoration: "none", display: "inline-block" }}>
+            Log in
           </a>
-          <a href="/signup" style={{
-            background: "linear-gradient(90deg, #ff6fa3, #a37cf0)",
-            border: "none",
-            borderRadius: 12,
-            padding: "8px 20px",
-            fontWeight: 800,
-            fontSize: 13,
-            color: "white",
-            textDecoration: "none",
-          }}>
-            Sign Up
+          <a href="/signup" className="btn-primary" style={{ textDecoration: "none", display: "inline-block" }}>
+            Sign up
           </a>
         </nav>
 
         {/* Logo */}
-        <div className="logo" style={{ marginBottom: 32 }}>
-          <div className="logo-dot" />
+        <div className="logo" style={{ marginBottom: 40, position: "relative", zIndex: 1 }}>
+          <span className="logo-mark">
+            <img src="/logo.png" alt="Mini Z and Me" />
+          </span>
           <h1>Mini Z and Me</h1>
         </div>
 
         {/* Headline */}
         <h2 style={{
-          fontSize: "clamp(36px, 6vw, 64px)",
-          fontWeight: 900,
-          lineHeight: 1.1,
-          color: "#2b2740",
-          maxWidth: 720,
-          margin: "0 auto 20px",
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(48px, 8vw, 88px)",
+          fontWeight: 700,
+          lineHeight: 0.95,
+          color: "var(--ink)",
+          maxWidth: 820,
+          margin: "0 auto 24px",
+          letterSpacing: 0.5,
+          position: "relative",
+          zIndex: 1,
         }}>
-          Turn playtime into<br />
+          Turn playtime into{" "}
           <span style={{
-            background: "linear-gradient(90deg, #ff6fa3, #a37cf0, #4dc3ff)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
+            color: "var(--clay)",
+            position: "relative",
+            display: "inline-block",
+            transform: "rotate(-1.5deg)",
           }}>
             learning time
           </span>
         </h2>
 
         <p style={{
-          fontSize: 18,
+          fontSize: 19,
           fontWeight: 600,
-          color: "#5d5878",
+          color: "var(--ink-soft)",
           maxWidth: 560,
-          margin: "0 auto 40px",
+          margin: "0 auto 44px",
           lineHeight: 1.6,
+          position: "relative",
+          zIndex: 1,
         }}>
-          Expert-designed activities for babies &amp; toddlers aged 0–5,
-          rooted in early childhood development — and completely free.
+          Expert-designed activities for little ones aged 0 to 5, grounded in early
+          childhood development — and completely free.
         </p>
 
         {/* CTAs */}
-        <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
-          <a href="/signup" style={{
-            background: "linear-gradient(90deg, #ff6fa3, #a37cf0)",
-            color: "white",
-            borderRadius: 16,
-            padding: "16px 36px",
-            fontWeight: 900,
-            fontSize: 16,
+        <div style={{
+          display: "flex",
+          gap: 16,
+          flexWrap: "wrap",
+          justifyContent: "center",
+          position: "relative",
+          zIndex: 1,
+        }}>
+          <a href="/signup" className="btn-primary" style={{
             textDecoration: "none",
-            boxShadow: "0 8px 32px #a37cf040",
+            display: "inline-block",
+            fontSize: 16,
+            padding: "16px 36px",
           }}>
             Get started free →
           </a>
-          <a href="/login" style={{
-            background: "white",
-            border: "2.5px solid #efeaf7",
-            color: "#5d5878",
-            borderRadius: 16,
-            padding: "16px 36px",
-            fontWeight: 800,
-            fontSize: 16,
+          <a href="/login" className="btn-secondary" style={{
             textDecoration: "none",
+            display: "inline-block",
+            fontSize: 16,
+            padding: "14px 36px",
           }}>
-            Log in
+            I already have an account
           </a>
         </div>
 
-        <p style={{ marginTop: 20, fontSize: 13, fontWeight: 700, color: "#b8aed4" }}>
+        <p style={{
+          marginTop: 24,
+          fontSize: 14,
+          fontWeight: 700,
+          color: "var(--ink-faint)",
+          position: "relative",
+          zIndex: 1,
+        }}>
           No credit card required · Free forever for families
         </p>
       </section>
 
       {/* ── How it works ─────────────────────────────────────── */}
       <section style={{
-        background: "white",
         padding: "80px 24px",
         textAlign: "center",
+        position: "relative",
       }}>
-        <p style={{ fontSize: 13, fontWeight: 800, color: "#a37cf0", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>
+        <p style={{
+          fontSize: 13,
+          fontWeight: 900,
+          color: "var(--sage-dark)",
+          letterSpacing: 2,
+          textTransform: "uppercase",
+          marginBottom: 12,
+        }}>
           How it works
         </p>
-        <h3 style={{ fontSize: 34, fontWeight: 900, color: "#2b2740", marginBottom: 56 }}>
+        <h3 style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(34px, 5vw, 48px)",
+          fontWeight: 700,
+          color: "var(--ink)",
+          marginBottom: 56,
+          letterSpacing: 0.3,
+        }}>
           Play-based learning in three steps
         </h3>
 
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 32,
-          maxWidth: 860,
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+          gap: 36,
+          maxWidth: 920,
           margin: "0 auto",
         }}>
-          {steps.map((s) => (
-            <div key={s.num} style={{ textAlign: "center" }}>
+          {steps.map((s, i) => (
+            <div key={s.num} style={{
+              textAlign: "center",
+              transform: `rotate(${i === 1 ? "0.6deg" : i === 0 ? "-0.4deg" : "-0.7deg"})`,
+            }}>
               <div style={{
-                width: 56,
-                height: 56,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #ff6fa3, #a37cf0)",
-                color: "white",
-                fontSize: 22,
-                fontWeight: 900,
+                width: 80,
+                height: 80,
+                borderRadius: "58% 42% 50% 50% / 50% 50% 42% 58%",
+                background: i === 0 ? "var(--clay)" : i === 1 ? "var(--sage)" : "var(--mustard)",
+                color: "var(--cream)",
+                fontFamily: "var(--font-display)",
+                fontSize: 44,
+                fontWeight: 700,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                margin: "0 auto 16px",
+                margin: "0 auto 18px",
+                boxShadow: "0 5px 0 rgba(74, 52, 36, 0.18)",
+                lineHeight: 1,
               }}>
                 {s.num}
               </div>
-              <div style={{ fontSize: 18, fontWeight: 900, color: "#2b2740", marginBottom: 8 }}>{s.label}</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#5d5878", lineHeight: 1.6 }}>{s.desc}</div>
+              <div style={{
+                fontFamily: "var(--font-display)",
+                fontSize: 26,
+                fontWeight: 700,
+                color: "var(--ink)",
+                marginBottom: 6,
+                lineHeight: 1.1,
+              }}>
+                {s.label}
+              </div>
+              <div style={{
+                fontSize: 15,
+                fontWeight: 600,
+                color: "var(--ink-soft)",
+                lineHeight: 1.6,
+                maxWidth: 240,
+                margin: "0 auto",
+              }}>
+                {s.desc}
+              </div>
             </div>
           ))}
         </div>
@@ -204,35 +249,82 @@ export default function LandingPage() {
 
       {/* ── Features ─────────────────────────────────────────── */}
       <section style={{
-        background: "linear-gradient(135deg, #fff1f6 0%, #f0f9ff 100%)",
         padding: "80px 24px",
         textAlign: "center",
+        background: "var(--paper)",
+        position: "relative",
       }}>
-        <p style={{ fontSize: 13, fontWeight: 800, color: "#ff6fa3", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>
-          Features
+        <p style={{
+          fontSize: 13,
+          fontWeight: 900,
+          color: "var(--clay-dark)",
+          letterSpacing: 2,
+          textTransform: "uppercase",
+          marginBottom: 12,
+        }}>
+          What's inside
         </p>
-        <h3 style={{ fontSize: 34, fontWeight: 900, color: "#2b2740", marginBottom: 48 }}>
+        <h3 style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(34px, 5vw, 48px)",
+          fontWeight: 700,
+          color: "var(--ink)",
+          marginBottom: 48,
+          letterSpacing: 0.3,
+        }}>
           Everything parents need
         </h3>
 
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          gap: 24,
-          maxWidth: 900,
+          gap: 28,
+          maxWidth: 940,
           margin: "0 auto",
         }}>
-          {features.map((f) => (
+          {features.map((f, i) => (
             <div key={f.title} style={{
-              background: "white",
-              borderRadius: 24,
+              background: "var(--cream)",
+              borderRadius: i % 2 === 0 ? "var(--r1)" : "var(--r3)",
               padding: "32px 28px",
               textAlign: "left",
-              boxShadow: "0 4px 24px #a37cf015",
+              border: "2px solid var(--paper-edge)",
+              boxShadow: "var(--shadow-paper)",
+              transform: `rotate(${i % 2 === 0 ? "-0.5deg" : "0.4deg"})`,
+              position: "relative",
             }}>
-              <div style={{ fontSize: 36, marginBottom: 14 }}>{f.emoji}</div>
-              <div style={{ fontSize: 17, fontWeight: 900, color: "#2b2740", marginBottom: 8 }}>{f.title}</div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#5d5878", lineHeight: 1.6 }}>{f.desc}</div>
+              <div style={{
+                width: 60,
+                height: 60,
+                borderRadius: "50% 45% 50% 50% / 50% 50% 45% 50%",
+                background: f.accent,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 30,
+                marginBottom: 16,
+                boxShadow: "0 3px 0 rgba(74, 52, 36, 0.15)",
+              }}>
+                {f.emoji}
+              </div>
+              <div style={{
+                fontFamily: "var(--font-display)",
+                fontSize: 26,
+                fontWeight: 700,
+                color: "var(--ink)",
+                marginBottom: 6,
+                lineHeight: 1.1,
+              }}>
+                {f.title}
+              </div>
+              <div style={{
+                fontSize: 15,
+                fontWeight: 600,
+                color: "var(--ink-soft)",
+                lineHeight: 1.6,
+              }}>
+                {f.desc}
+              </div>
             </div>
           ))}
         </div>
@@ -240,32 +332,55 @@ export default function LandingPage() {
 
       {/* ── Activity preview ─────────────────────────────────── */}
       <section style={{
-        background: "white",
         padding: "80px 24px",
         textAlign: "center",
+        position: "relative",
       }}>
-        <p style={{ fontSize: 13, fontWeight: 800, color: "#4dc3ff", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>
-          A taste of what&apos;s inside
+        <p style={{
+          fontSize: 13,
+          fontWeight: 900,
+          color: "var(--mustard-dark)",
+          letterSpacing: 2,
+          textTransform: "uppercase",
+          marginBottom: 12,
+        }}>
+          A taste of what's inside
         </p>
-        <h3 style={{ fontSize: 34, fontWeight: 900, color: "#2b2740", marginBottom: 12 }}>
+        <h3 style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(34px, 5vw, 48px)",
+          fontWeight: 700,
+          color: "var(--ink)",
+          marginBottom: 12,
+          letterSpacing: 0.3,
+        }}>
           Activities your child will love
         </h3>
-        <p style={{ fontSize: 15, fontWeight: 600, color: "#5d5878", marginBottom: 48 }}>
+        <p style={{
+          fontSize: 16,
+          fontWeight: 600,
+          color: "var(--ink-soft)",
+          marginBottom: 48,
+        }}>
           Sign up to unlock the full library and build your own.
         </p>
 
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-          gap: 20,
-          maxWidth: 860,
-          margin: "0 auto 40px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: 24,
+          maxWidth: 920,
+          margin: "0 auto 44px",
         }}>
-          {previews.map((p) => (
+          {previews.map((p, i) => (
             <a key={p.title} href="/signup" style={{ textDecoration: "none" }}>
               <div
                 className="activity-card"
-                style={{ ["--accent" as string]: p.color, cursor: "pointer" }}
+                style={{
+                  ["--accent" as string]: p.color,
+                  cursor: "pointer",
+                  transform: `rotate(${i === 0 ? "-0.6deg" : i === 1 ? "0.4deg" : "-0.3deg"})`,
+                }}
               >
                 <div className="activity-icon">{p.emoji}</div>
                 <div className="activity-title">{p.title}</div>
@@ -279,59 +394,92 @@ export default function LandingPage() {
           ))}
         </div>
 
-        <a href="/signup" style={{
-          display: "inline-block",
-          background: "white",
-          border: "2.5px solid #efeaf7",
-          color: "#a37cf0",
-          borderRadius: 14,
-          padding: "12px 28px",
-          fontWeight: 800,
-          fontSize: 14,
+        <a href="/signup" className="btn-secondary" style={{
           textDecoration: "none",
+          display: "inline-block",
+          fontSize: 14,
         }}>
-          See all 13 activities →
+          See the full library →
         </a>
       </section>
 
       {/* ── Development section ──────────────────────────────── */}
       <section style={{
-        background: "linear-gradient(135deg, #fef8e1 0%, #f0f9ff 100%)",
         padding: "80px 24px",
         textAlign: "center",
+        background: "#e8eddd",
+        position: "relative",
       }}>
-        <p style={{ fontSize: 13, fontWeight: 800, color: "#ffd43b", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>
+        <p style={{
+          fontSize: 13,
+          fontWeight: 900,
+          color: "var(--olive)",
+          letterSpacing: 2,
+          textTransform: "uppercase",
+          marginBottom: 12,
+        }}>
           Built on research
         </p>
-        <h3 style={{ fontSize: 34, fontWeight: 900, color: "#2b2740", marginBottom: 20 }}>
-          Every activity links back to<br />a developmental milestone
+        <h3 style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(34px, 5vw, 48px)",
+          fontWeight: 700,
+          color: "var(--ink)",
+          marginBottom: 20,
+          letterSpacing: 0.3,
+        }}>
+          Every activity links to a<br />developmental milestone
         </h3>
-        <p style={{ fontSize: 16, fontWeight: 600, color: "#5d5878", maxWidth: 560, margin: "0 auto 48px", lineHeight: 1.7 }}>
-          Mini Z and Me isn&apos;t just fun — every activity tells you how it connects to your child&apos;s
-          earlier development, so you always understand the <em>why</em> behind the play.
+        <p style={{
+          fontSize: 16,
+          fontWeight: 600,
+          color: "var(--ink-soft)",
+          maxWidth: 580,
+          margin: "0 auto 48px",
+          lineHeight: 1.65,
+        }}>
+          Mini Z and Me isn&apos;t just fun — every activity tells you how it connects to
+          your child&apos;s earlier development, so you always understand the <em>why</em>{" "}
+          behind the play.
         </p>
 
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: 20,
-          maxWidth: 760,
+          gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))",
+          gap: 22,
+          maxWidth: 800,
           margin: "0 auto",
         }}>
-          {[
-            { emoji: "🧠", label: "Cognitive growth" },
-            { emoji: "🤝", label: "Social skills" },
-            { emoji: "✋", label: "Fine motor skills" },
-            { emoji: "🗣️", label: "Language & literacy" },
-          ].map((b) => (
+          {developmentBadges.map((b, i) => (
             <div key={b.label} style={{
-              background: "white",
-              borderRadius: 20,
+              background: "var(--cream)",
+              borderRadius: i % 2 === 0 ? "var(--r2)" : "var(--r1)",
               padding: "28px 20px",
-              boxShadow: "0 4px 20px #a37cf010",
+              border: "2px solid var(--paper-edge)",
+              boxShadow: "var(--shadow-paper)",
+              transform: `rotate(${["1deg", "-0.7deg", "0.5deg", "-1deg"][i]})`,
             }}>
-              <div style={{ fontSize: 32, marginBottom: 10 }}>{b.emoji}</div>
-              <div style={{ fontSize: 15, fontWeight: 800, color: "#2b2740" }}>{b.label}</div>
+              <div style={{
+                width: 56,
+                height: 56,
+                borderRadius: "50% 45% 50% 50% / 50% 50% 45% 50%",
+                background: b.accent,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 28,
+                margin: "0 auto 12px",
+                boxShadow: "0 3px 0 rgba(74, 52, 36, 0.15)",
+              }}>
+                {b.emoji}
+              </div>
+              <div style={{
+                fontSize: 15,
+                fontWeight: 800,
+                color: "var(--ink)",
+              }}>
+                {b.label}
+              </div>
             </div>
           ))}
         </div>
@@ -339,26 +487,42 @@ export default function LandingPage() {
 
       {/* ── Final CTA ────────────────────────────────────────── */}
       <section style={{
-        background: "linear-gradient(135deg, #a37cf0, #4dc3ff)",
         padding: "100px 24px",
         textAlign: "center",
+        background: "var(--clay)",
+        position: "relative",
       }}>
-        <h3 style={{ fontSize: 38, fontWeight: 900, color: "white", marginBottom: 16 }}>
+        <h3 style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(38px, 6vw, 56px)",
+          fontWeight: 700,
+          color: "var(--cream)",
+          marginBottom: 16,
+          letterSpacing: 0.3,
+          lineHeight: 1.05,
+        }}>
           Ready to make playtime count?
         </h3>
-        <p style={{ fontSize: 17, fontWeight: 600, color: "rgba(255,255,255,0.85)", marginBottom: 40 }}>
-          Join Mini Z and Me — it&apos;s free for families, always.
+        <p style={{
+          fontSize: 18,
+          fontWeight: 600,
+          color: "rgba(245, 232, 211, 0.9)",
+          marginBottom: 40,
+        }}>
+          Join Mini Z and Me — free for families, always.
         </p>
         <a href="/signup" style={{
-          background: "white",
-          color: "#a37cf0",
-          borderRadius: 16,
+          background: "var(--cream)",
+          color: "var(--clay)",
+          borderRadius: "var(--r1)",
           padding: "18px 44px",
           fontWeight: 900,
           fontSize: 17,
           textDecoration: "none",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.15)",
           display: "inline-block",
+          boxShadow: "0 5px 0 rgba(74, 52, 36, 0.25)",
+          fontFamily: "inherit",
+          letterSpacing: 0.3,
         }}>
           Create your free account →
         </a>
@@ -370,8 +534,9 @@ export default function LandingPage() {
         padding: "32px 24px",
         fontSize: 13,
         fontWeight: 700,
-        color: "#b8aed4",
-        background: "white",
+        color: "var(--ink-soft)",
+        background: "var(--paper)",
+        borderTop: "2px solid var(--paper-edge)",
       }}>
         Made with love for curious little minds · Mini Z and Me © 2026
       </footer>

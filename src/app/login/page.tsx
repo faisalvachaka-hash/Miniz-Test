@@ -40,10 +40,10 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Welcome back! 👋" subtitle="Log in to your Mini Z and Me account">
+    <AuthLayout title="Welcome back!" subtitle="Log in to your Mini Z and Me account">
       <form onSubmit={handleLogin} className="flex flex-col gap-4">
         <div>
-          <label className="block text-sm font-bold mb-1.5" style={{ color: "#2b2740" }}>
+          <label className="block text-sm font-black mb-1.5" style={{ color: "var(--ink)" }}>
             Email address
           </label>
           <input
@@ -57,7 +57,7 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-bold mb-1.5" style={{ color: "#2b2740" }}>
+          <label className="block text-sm font-black mb-1.5" style={{ color: "var(--ink)" }}>
             Password
           </label>
           <input
@@ -80,18 +80,18 @@ export default function LoginPage() {
           className="btn-primary w-full"
           style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
         >
-          {loading ? "Logging in…" : "Log In →"}
+          {loading ? "Logging in…" : "Log in →"}
         </button>
 
-        <p className="text-center text-sm font-semibold" style={{ color: "#5d5878" }}>
-          <Link href="/forgot-password" style={{ color: "#a37cf0", fontWeight: 800 }}>
+        <p className="text-center text-sm font-bold mt-2" style={{ color: "var(--ink-soft)" }}>
+          <Link href="/forgot-password" style={{ color: "var(--clay)", fontWeight: 800 }}>
             Forgot password?
           </Link>
         </p>
 
-        <p className="text-center text-sm font-semibold" style={{ color: "#5d5878" }}>
+        <p className="text-center text-sm font-bold" style={{ color: "var(--ink-soft)" }}>
           Don&apos;t have an account?{" "}
-          <Link href="/signup" style={{ color: "#a37cf0", fontWeight: 800 }}>
+          <Link href="/signup" style={{ color: "var(--clay)", fontWeight: 800 }}>
             Sign up free
           </Link>
         </p>
@@ -101,13 +101,15 @@ export default function LoginPage() {
 }
 
 const inputStyle: React.CSSProperties = {
-  border: "2px solid #efeaf7",
-  borderRadius: 14,
+  border: "2px solid var(--paper-edge)",
+  borderRadius: "var(--r1)",
   padding: "12px 14px",
   fontFamily: "inherit",
   fontSize: 15,
   outline: "none",
   width: "100%",
   boxSizing: "border-box",
-  color: "#2b2740",
+  color: "var(--ink)",
+  background: "var(--cream)",
+  fontWeight: 600,
 };

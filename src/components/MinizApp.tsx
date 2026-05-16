@@ -293,42 +293,26 @@ export default function MinizApp() {
 
       <header className="text-center pt-9 pb-4 px-5">
         {/* App nav */}
-        <div className="flex justify-end gap-2 max-w-[1180px] mx-auto mb-4">
-          <a href="/dashboard" style={{
-            background: "white",
-            border: "2px solid #efeaf7",
-            borderRadius: 12,
-            padding: "8px 18px",
-            fontWeight: 800,
-            fontSize: 13,
-            color: "#5d5878",
-            textDecoration: "none",
-          }}>
+        <div className="flex justify-end gap-3 max-w-[1180px] mx-auto mb-6">
+          <a href="/dashboard" className="btn-secondary" style={{ textDecoration: "none", display: "inline-block", fontSize: 13, padding: "10px 18px" }}>
             My Library
           </a>
           <button
             onClick={async () => { await supabase.auth.signOut(); router.push("/"); }}
-            style={{
-              background: "white",
-              border: "2px solid #efeaf7",
-              borderRadius: 12,
-              padding: "8px 18px",
-              fontWeight: 800,
-              fontSize: 13,
-              color: "#5d5878",
-              cursor: "pointer",
-              fontFamily: "inherit",
-            }}
+            className="btn-secondary"
+            style={{ fontSize: 13, padding: "10px 18px" }}
           >
             Log Out
           </button>
         </div>
 
-        <div className="logo">
-          <div className="logo-dot" />
+        <div className="logo" style={{ justifyContent: "center", display: "inline-flex" }}>
+          <span className="logo-mark">
+            <img src="/logo.png" alt="Mini Z and Me" />
+          </span>
           <h1>Mini Z and Me</h1>
         </div>
-        <div className="mt-3.5 text-[var(--soft-ink)] text-[15px] font-semibold">
+        <div className="mt-4" style={{ color: "var(--ink-soft)", fontSize: 16, fontWeight: 700 }}>
           {activeChild
             ? `Playing with ${activeChild.name} · age ${activeChild.age}`
             : "Playful learning for tiny humans · ages 0 to 5"}
@@ -337,8 +321,8 @@ export default function MinizApp() {
 
       <main className="max-w-[1180px] mx-auto px-5 pb-20">
         {children.length > 0 && (
-          <div className="flex items-center justify-center gap-2 flex-wrap mt-2 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#9b93b8" }}>
+          <div className="flex items-center justify-center gap-2 flex-wrap mt-4 mb-2">
+            <span className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--ink-faint)" }}>
               Showing for:
             </span>
             {children.map((c) => {
@@ -350,11 +334,11 @@ export default function MinizApp() {
                   className="chip"
                   style={{
                     fontSize: 13,
-                    padding: "7px 16px",
+                    padding: "8px 16px",
                     cursor: "pointer",
-                    border: active ? "2px solid #a37cf0" : "2px solid transparent",
-                    background: active ? "#f0ebff" : "white",
-                    color: active ? "#6b42c8" : "#5d5878",
+                    border: active ? "2px solid var(--clay)" : "2px solid var(--paper-edge)",
+                    background: active ? "var(--clay)" : "var(--paper)",
+                    color: active ? "var(--cream)" : "var(--ink)",
                     fontFamily: "inherit",
                     fontWeight: 800,
                   }}
@@ -368,12 +352,12 @@ export default function MinizApp() {
               className="chip"
               style={{
                 fontSize: 13,
-                padding: "7px 14px",
-                background: "white",
-                color: "#a37cf0",
+                padding: "8px 14px",
+                background: "var(--paper)",
+                color: "var(--clay)",
                 fontWeight: 800,
                 textDecoration: "none",
-                border: "2px dashed #efeaf7",
+                border: "2px dashed var(--clay-soft)",
               }}
             >
               + Add child
@@ -429,12 +413,13 @@ export default function MinizApp() {
                 className="chip"
                 style={{
                   fontSize: 13,
-                  padding: "7px 16px",
+                  padding: "8px 16px",
                   cursor: "pointer",
-                  border: active ? "2px solid #a37cf0" : "2px solid transparent",
-                  background: active ? "#f0ebff" : undefined,
-                  color: active ? "#6b42c8" : undefined,
+                  border: active ? "2px solid var(--clay)" : "2px solid var(--paper-edge)",
+                  background: active ? "var(--clay)" : "var(--paper)",
+                  color: active ? "var(--cream)" : "var(--ink)",
                   fontFamily: "inherit",
+                  fontWeight: 800,
                 }}
               >
                 {s.emoji} {s.label}
@@ -454,15 +439,15 @@ export default function MinizApp() {
             style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}
           >
             {[1, 2, 3].map((i) => (
-              <div key={i} className="activity-card" style={{ ["--accent" as string]: "#e5e7eb" }}>
-                <div style={{ width: 56, height: 56, borderRadius: 16, background: "#f3f4f6", marginBottom: 12 }} />
-                <div style={{ height: 20, width: "70%", background: "#f3f4f6", borderRadius: 8, marginBottom: 8 }} />
-                <div style={{ height: 14, width: "50%", background: "#f3f4f6", borderRadius: 8 }} />
+              <div key={i} className="activity-card" style={{ ["--accent" as string]: "var(--paper-edge)" }}>
+                <div style={{ width: 60, height: 60, borderRadius: 16, background: "var(--paper-edge)", marginBottom: 12 }} />
+                <div style={{ height: 22, width: "70%", background: "var(--paper-edge)", borderRadius: 8, marginBottom: 8 }} />
+                <div style={{ height: 14, width: "50%", background: "var(--paper-edge)", borderRadius: 8 }} />
               </div>
             ))}
           </div>
         ) : filteredActivities.length === 0 ? (
-          <div className="text-center py-12 text-[var(--soft-ink)] font-semibold">
+          <div className="text-center py-12" style={{ color: "var(--ink-soft)", fontWeight: 700 }}>
             <span className="block text-6xl mb-2.5">🌱</span>
             No activities yet — try the builder below!
           </div>
@@ -497,22 +482,24 @@ export default function MinizApp() {
                         position: "absolute",
                         top: 12,
                         right: 12,
-                        width: 36,
-                        height: 36,
-                        borderRadius: 12,
-                        border: "none",
-                        background: isSaved ? "#fff4b8" : "rgba(255,255,255,0.9)",
+                        width: 38,
+                        height: 38,
+                        borderRadius: "50% 45% 50% 50% / 50% 50% 45% 50%",
+                        border: "2px solid var(--paper-edge)",
+                        background: isSaved ? "var(--mustard)" : "var(--cream)",
                         cursor: "pointer",
                         fontSize: 18,
                         lineHeight: 1,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+                        color: isSaved ? "var(--cream)" : "var(--ink-faint)",
+                        boxShadow: "0 2px 0 var(--paper-edge)",
                         transition: "transform 0.15s",
+                        fontWeight: 800,
                       }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+                      onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-1px) rotate(-3deg)")}
+                      onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0) rotate(0deg)")}
                     >
                       {isSaved ? "★" : "☆"}
                     </button>
@@ -524,13 +511,13 @@ export default function MinizApp() {
                     <span className="chip duration">⏱ {a.duration}</span>
                     <span className="chip area">{a.area}</span>
                     {a.easeOfPrep && (
-                      <span className="chip" style={{ background: "#edf7ed", color: "#1a6e2e" }}>
+                      <span className="chip" style={{ background: "#dde9d7", color: "var(--sage-dark)", borderColor: "#c2d3bb" }}>
                         ⚡ Prep {a.easeOfPrep}/10
                       </span>
                     )}
                     {a.isCustom && <span className="chip custom">✨ custom</span>}
                     {isSaved && !a.isCustom && (
-                      <span className="chip" style={{ background: "#fff4b8", color: "#8a6d00" }}>
+                      <span className="chip" style={{ background: "var(--mustard)", color: "var(--cream)", borderColor: "var(--mustard-dark)" }}>
                         ★ saved
                       </span>
                     )}
@@ -583,7 +570,17 @@ export default function MinizApp() {
         </div>
       </main>
 
-      <footer className="text-center py-8 px-5 text-[var(--soft-ink)] text-[13px] font-semibold">
+      <footer
+        className="text-center py-8 px-5"
+        style={{
+          color: "var(--ink-soft)",
+          fontSize: 13,
+          fontWeight: 700,
+          background: "var(--paper)",
+          borderTop: "2px solid var(--paper-edge)",
+          marginTop: 40,
+        }}
+      >
         Made with love for curious little minds · Mini Z and Me © 2026
       </footer>
 

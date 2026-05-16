@@ -37,12 +37,12 @@ export type Child = {
 };
 
 export const AGES: AgeGroup[] = [
-  { age: 0, label: "0 years", sub: "Baby", emoji: "👶", color: "#ff6fa3" },
-  { age: 1, label: "1 year", sub: "Wobbler", emoji: "🍼", color: "#ff9a3c" },
-  { age: 2, label: "2 years", sub: "Tiny explorer", emoji: "🧸", color: "#ffd43b" },
-  { age: 3, label: "3 years", sub: "Curious kid", emoji: "🎨", color: "#5ed9b1" },
-  { age: 4, label: "4 years", sub: "Pre-schooler", emoji: "🚀", color: "#4dc3ff" },
-  { age: 5, label: "5 years", sub: "Little learner", emoji: "📚", color: "#a37cf0" },
+  { age: 0, label: "0 years", sub: "Baby", emoji: "👶", color: "#c97a6b" },        // dusty rose
+  { age: 1, label: "1 year", sub: "Wobbler", emoji: "🍼", color: "#d4a949" },      // mustard
+  { age: 2, label: "2 years", sub: "Tiny explorer", emoji: "🧸", color: "#b85a40" }, // clay
+  { age: 3, label: "3 years", sub: "Curious kid", emoji: "🎨", color: "#8ba888" },  // sage
+  { age: 4, label: "4 years", sub: "Pre-schooler", emoji: "🚀", color: "#7a93a6" }, // dusty blue
+  { age: 5, label: "5 years", sub: "Little learner", emoji: "📚", color: "#6b7a4f" }, // olive
 ];
 
 export function mapActivityFromDB(row: Record<string, unknown>): Activity {

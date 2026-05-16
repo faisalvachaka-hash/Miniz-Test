@@ -32,21 +32,11 @@ export default function ForgotPasswordPage() {
     return (
       <AuthLayout title="Check your inbox 📬" subtitle="We've sent a password reset link to your email">
         <div className="text-center">
-          <p className="font-semibold mb-6" style={{ color: "#5d5878", fontSize: 15, lineHeight: 1.6 }}>
+          <p className="mb-6" style={{ color: "var(--ink-soft)", fontSize: 15, fontWeight: 600, lineHeight: 1.6 }}>
             Click the link in the email to set a new password. It may take a minute to arrive — check your spam folder too.
           </p>
-          <Link href="/login" style={{
-            display: "inline-block",
-            background: "white",
-            border: "2px solid #efeaf7",
-            borderRadius: 14,
-            padding: "12px 28px",
-            fontWeight: 800,
-            fontSize: 14,
-            color: "#5d5878",
-            textDecoration: "none",
-          }}>
-            Back to Log In
+          <Link href="/login" className="btn-secondary" style={{ display: "inline-block", textDecoration: "none" }}>
+            Back to log in
           </Link>
         </div>
       </AuthLayout>
@@ -57,7 +47,7 @@ export default function ForgotPasswordPage() {
     <AuthLayout title="Reset your password 🔑" subtitle="Enter your email and we'll send you a reset link">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
-          <label className="block text-sm font-bold mb-1.5" style={{ color: "#2b2740" }}>
+          <label className="block text-sm font-black mb-1.5" style={{ color: "var(--ink)" }}>
             Email address
           </label>
           <input
@@ -83,9 +73,9 @@ export default function ForgotPasswordPage() {
           {loading ? "Sending…" : "Send reset link →"}
         </button>
 
-        <p className="text-center text-sm font-semibold" style={{ color: "#5d5878" }}>
+        <p className="text-center text-sm font-bold" style={{ color: "var(--ink-soft)" }}>
           Remember your password?{" "}
-          <Link href="/login" style={{ color: "#a37cf0", fontWeight: 800 }}>
+          <Link href="/login" style={{ color: "var(--clay)", fontWeight: 800 }}>
             Log in
           </Link>
         </p>
@@ -95,13 +85,15 @@ export default function ForgotPasswordPage() {
 }
 
 const inputStyle: React.CSSProperties = {
-  border: "2px solid #efeaf7",
-  borderRadius: 14,
+  border: "2px solid var(--paper-edge)",
+  borderRadius: "var(--r1)",
   padding: "12px 14px",
   fontFamily: "inherit",
   fontSize: 15,
   outline: "none",
   width: "100%",
   boxSizing: "border-box",
-  color: "#2b2740",
+  color: "var(--ink)",
+  background: "var(--cream)",
+  fontWeight: 600,
 };

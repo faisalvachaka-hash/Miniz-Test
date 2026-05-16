@@ -68,26 +68,6 @@ export default function DashboardPage() {
     });
   }, [router]);
 
-  async function handleRemoveCustom(activity: Activity) {
-    if (!confirm(`Delete "${activity.title}"? This cannot be undone.`)) return;
-    const { error } = await supabase.from("activities").delete().eq("id", activity.id);
-    if (!error) {
-      setLibrary((prev) => prev.filter((e) => String(e.activity.id) !== String(activity.id)));
-    }
-  }
-
-  async function handleUnsave(activity: Activity) {
-    if (!user) return;
-    const { error } = await supabase
-      .from("saved_activities")
-      .delete()
-      .eq("user_id", user.id)
-      .eq("activity_id", activity.id);
-    if (!error) {
-      setLibrary((prev) => prev.filter((e) => String(e.activity.id) !== String(activity.id)));
-    }
-  }
-
   async function handleLogout() {
     await supabase.auth.signOut();
     router.push("/login");
@@ -133,101 +113,118 @@ export default function DashboardPage() {
     }
   }
 
+  async function handleRemoveCustom(activity: Activity) {
+    if (!confirm(`Delete "${activity.title}"? This cannot be undone.`)) return;
+    const { error } = await supabase.from("activities").delete().eq("id", activity.id);
+    if (!error) {
+      setLibrary((prev) => prev.filter((e) => String(e.activity.id) !== String(activity.id)));
+    }
+  }
+
+  async function handleUnsave(activity: Activity) {
+    if (!user) return;
+    const { error } = await supabase
+      .from("saved_activities")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("activity_id", activity.id);
+    if (!error) {
+      setLibrary((prev) => prev.filter((e) => String(e.activity.id) !== String(activity.id)));
+    }
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center"
-        style={{ background: "linear-gradient(135deg, #fff1f6 0%, #f0f9ff 40%, #fef8e1 100%)" }}>
-        <div className="text-2xl font-black" style={{ color: "#a37cf0" }}>Loading…</div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div style={{
+          fontFamily: "var(--font-display)",
+          fontSize: 36,
+          fontWeight: 700,
+          color: "var(--clay)",
+        }}>
+          Loading…
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen px-5 py-10"
-      style={{ background: "linear-gradient(135deg, #fff1f6 0%, #f0f9ff 40%, #fef8e1 100%)" }}>
+    <div className="min-h-screen px-5 py-10" style={{ position: "relative" }}>
       <div className="blob b1" />
       <div className="blob b2" />
       <div className="blob b3" />
 
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto" style={{ position: "relative", zIndex: 1 }}>
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <a href="/app" style={{
-            fontSize: 20,
-            fontWeight: 900,
-            background: "linear-gradient(90deg, #ff6fa3, #a37cf0, #4dc3ff)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-            textDecoration: "none",
-          }}>
-            Mini Z and Me
+          <a href="/app" className="logo" style={{ textDecoration: "none" }}>
+            <span className="logo-mark" style={{ width: 48, height: 48 }}>
+              <img src="/logo.png" alt="Mini Z and Me" />
+            </span>
+            <span style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 28,
+              fontWeight: 700,
+              color: "var(--clay)",
+              letterSpacing: 0.3,
+              lineHeight: 1,
+            }}>
+              Mini Z and Me
+            </span>
           </a>
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "white",
-              border: "2px solid #efeaf7",
-              borderRadius: 12,
-              padding: "8px 18px",
-              fontFamily: "inherit",
-              fontWeight: 800,
-              fontSize: 14,
-              color: "#5d5878",
-              cursor: "pointer",
-            }}
-          >
-            Log Out
+          <button onClick={handleLogout} className="btn-secondary" style={{ fontSize: 13, padding: "10px 18px" }}>
+            Log out
           </button>
         </div>
 
         {/* Welcome card */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl mb-6">
-          <div className="text-5xl mb-4">🌟</div>
-          <h1 className="text-3xl font-black mb-1" style={{ color: "#2b2740" }}>
+        <div style={cardStyle("var(--r1)", "-0.4deg")} className="mb-6">
+          <div className="text-5xl mb-3">🌟</div>
+          <h1 style={{
+            fontFamily: "var(--font-display)",
+            fontSize: 44,
+            fontWeight: 700,
+            color: "var(--ink)",
+            margin: 0,
+            lineHeight: 1,
+          }}>
             Welcome back!
           </h1>
-          <p className="font-semibold text-lg" style={{ color: "#a37cf0" }}>
+          <p style={{ fontSize: 17, fontWeight: 700, color: "var(--clay)", marginTop: 8 }}>
             {user?.email}
           </p>
         </div>
 
         {/* Children card */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl mb-6">
-          <div className="flex items-center justify-between mb-1">
-            <h2 className="font-black text-xl" style={{ color: "#2b2740" }}>
-              My children
-            </h2>
+        <div style={cardStyle("var(--r2)", "0.3deg")} className="mb-6">
+          <div className="flex items-center justify-between mb-1 flex-wrap gap-3">
+            <h2 style={sectionHeading}>My children</h2>
             <button
               onClick={() => setShowAdd((s) => !s)}
-              style={{
-                background: showAdd ? "#efeaf7" : "linear-gradient(90deg, #ff6fa3, #a37cf0)",
-                color: showAdd ? "#5d5878" : "white",
-                border: "none",
-                borderRadius: 12,
-                padding: "8px 16px",
-                fontFamily: "inherit",
-                fontWeight: 800,
-                fontSize: 13,
-                cursor: "pointer",
-              }}
+              className={showAdd ? "btn-secondary" : "btn-primary"}
+              style={{ fontSize: 13, padding: "10px 18px" }}
             >
               {showAdd ? "Cancel" : "+ Add child"}
             </button>
           </div>
-          <p className="font-semibold mb-6" style={{ color: "#5d5878", fontSize: 14 }}>
+          <p style={{ color: "var(--ink-soft)", fontSize: 14, fontWeight: 600, marginBottom: 22 }}>
             We&apos;ll pre-filter activities for the active child.
           </p>
 
           {showAdd && (
             <form
               onSubmit={handleAddChild}
-              className="mb-6 p-4 rounded-2xl"
-              style={{ background: "#faf8ff", border: "2px solid #efeaf7" }}
+              style={{
+                padding: 20,
+                background: "var(--cream)",
+                border: "2px solid var(--paper-edge)",
+                borderRadius: "var(--r1)",
+                marginBottom: 22,
+              }}
             >
               <div className="grid gap-3" style={{ gridTemplateColumns: "1fr 160px" }}>
                 <div>
-                  <label className="block text-xs font-bold mb-1" style={{ color: "#2b2740" }}>
+                  <label className="block text-xs font-black mb-1" style={{ color: "var(--ink)" }}>
                     Child&apos;s name
                   </label>
                   <input
@@ -239,7 +236,7 @@ export default function DashboardPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold mb-1" style={{ color: "#2b2740" }}>
+                  <label className="block text-xs font-black mb-1" style={{ color: "var(--ink)" }}>
                     Age
                   </label>
                   <select
@@ -256,20 +253,16 @@ export default function DashboardPage() {
                 </div>
               </div>
               {addError && <div className="safety-banner mt-3">⚠️ {addError}</div>}
-              <button
-                type="submit"
-                className="btn-primary mt-3"
-                style={{ width: "100%" }}
-              >
+              <button type="submit" className="btn-primary mt-3" style={{ width: "100%" }}>
                 Save child
               </button>
             </form>
           )}
 
           {children.length === 0 ? (
-            <div className="text-center py-8" style={{ color: "#9b93b8" }}>
+            <div className="text-center py-8" style={{ color: "var(--ink-faint)" }}>
               <div className="text-4xl mb-2">👶</div>
-              <p className="font-semibold">No children added yet.</p>
+              <p style={{ fontWeight: 700 }}>No children added yet.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
@@ -279,26 +272,38 @@ export default function DashboardPage() {
                 return (
                   <div
                     key={c.id}
-                    className="flex items-center gap-3 p-4 rounded-2xl"
-                    style={{ background: "#faf8ff", border: "2px solid #efeaf7" }}
+                    className="flex items-center gap-3"
+                    style={{
+                      padding: 16,
+                      background: "var(--cream)",
+                      border: "2px solid var(--paper-edge)",
+                      borderRadius: "var(--r1)",
+                    }}
                   >
                     <div
                       style={{
-                        width: 48,
-                        height: 48,
-                        borderRadius: 14,
-                        background: ageInfo?.color ?? "#a37cf0",
+                        width: 56,
+                        height: 56,
+                        borderRadius: "50% 45% 50% 50% / 50% 50% 45% 50%",
+                        background: ageInfo?.color ?? "var(--clay)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        fontSize: 24,
+                        fontSize: 28,
                         flexShrink: 0,
+                        boxShadow: "0 3px 0 rgba(74, 52, 36, 0.15)",
                       }}
                     >
                       {ageInfo?.emoji}
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div className="font-black" style={{ color: "#2b2740", fontSize: 16 }}>
+                      <div style={{
+                        fontFamily: "var(--font-display)",
+                        fontWeight: 700,
+                        color: "var(--ink)",
+                        fontSize: 24,
+                        lineHeight: 1.1,
+                      }}>
                         {c.name}
                       </div>
                       {isEditing ? (
@@ -315,7 +320,7 @@ export default function DashboardPage() {
                           ))}
                         </select>
                       ) : (
-                        <div className="font-semibold text-sm" style={{ color: "#5d5878" }}>
+                        <div style={{ color: "var(--ink-soft)", fontSize: 13, fontWeight: 700 }}>
                           {ageInfo?.label} · {ageInfo?.sub}
                         </div>
                       )}
@@ -324,32 +329,24 @@ export default function DashboardPage() {
                       <>
                         <button
                           onClick={() => setEditingId(c.id)}
-                          style={{
-                            background: "white",
-                            border: "2px solid #efeaf7",
-                            borderRadius: 10,
-                            padding: "6px 12px",
-                            fontFamily: "inherit",
-                            fontWeight: 800,
-                            fontSize: 12,
-                            color: "#5d5878",
-                            cursor: "pointer",
-                          }}
+                          className="btn-secondary"
+                          style={{ fontSize: 12, padding: "7px 12px" }}
                         >
                           Edit age
                         </button>
                         <button
                           onClick={() => handleDeleteChild(c)}
                           style={{
-                            background: "white",
-                            border: "2px solid #ffd6e3",
-                            borderRadius: 10,
-                            padding: "6px 12px",
+                            background: "var(--paper)",
+                            border: "2px solid #e9bdb0",
+                            borderRadius: "var(--r1)",
+                            padding: "7px 12px",
                             fontFamily: "inherit",
                             fontWeight: 800,
                             fontSize: 12,
-                            color: "#d23069",
+                            color: "#a14a3a",
                             cursor: "pointer",
+                            boxShadow: "0 3px 0 #e9bdb0",
                           }}
                         >
                           Remove
@@ -364,21 +361,19 @@ export default function DashboardPage() {
         </div>
 
         {/* My library */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl mb-6">
-          <h2 className="font-black text-xl mb-1" style={{ color: "#2b2740" }}>
-            My library
-          </h2>
-          <p className="font-semibold mb-6" style={{ color: "#5d5878", fontSize: 14 }}>
+        <div style={cardStyle("var(--r3)", "-0.2deg")} className="mb-6">
+          <h2 style={sectionHeading}>My library</h2>
+          <p style={{ color: "var(--ink-soft)", fontSize: 14, fontWeight: 600, marginBottom: 22 }}>
             Activities you&apos;ve built with the builder, plus curated activities you&apos;ve starred.
           </p>
 
           {library.length === 0 ? (
-            <div className="text-center py-10" style={{ color: "#9b93b8" }}>
+            <div className="text-center py-10" style={{ color: "var(--ink-faint)" }}>
               <div className="text-5xl mb-3">🌱</div>
-              <p className="font-semibold">Your library is empty.</p>
-              <p className="font-semibold text-sm mt-1">
+              <p style={{ fontWeight: 700 }}>Your library is empty.</p>
+              <p style={{ fontSize: 14, fontWeight: 600, marginTop: 6 }}>
                 Head to the{" "}
-                <a href="/app" style={{ color: "#a37cf0" }}>activity library</a>
+                <a href="/app" style={{ color: "var(--clay)", fontWeight: 800 }}>activity library</a>
                 {" "}and star activities you love, or use the builder to create your own.
               </p>
             </div>
@@ -414,23 +409,23 @@ export default function DashboardPage() {
                       position: "absolute",
                       top: 12,
                       right: 12,
-                      width: 32,
-                      height: 32,
-                      borderRadius: 10,
-                      border: "none",
-                      background: "rgba(255,255,255,0.95)",
+                      width: 34,
+                      height: 34,
+                      borderRadius: "50% 45% 50% 50% / 50% 50% 45% 50%",
+                      border: "2px solid #e9bdb0",
+                      background: "var(--cream)",
                       cursor: "pointer",
                       fontSize: 16,
                       lineHeight: 1,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
-                      color: "#d23069",
+                      boxShadow: "0 2px 0 #e9bdb0",
+                      color: "#a14a3a",
                       fontWeight: 800,
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#ffe6ee")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.95)")}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "#f4d6cd")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "var(--cream)")}
                   >
                     ×
                   </button>
@@ -443,7 +438,7 @@ export default function DashboardPage() {
                     {source === "custom" ? (
                       <span className="chip custom">✨ custom</span>
                     ) : (
-                      <span className="chip" style={{ background: "#fff4b8", color: "#8a6d00" }}>
+                      <span className="chip" style={{ background: "var(--mustard)", color: "var(--cream)", borderColor: "var(--mustard-dark)" }}>
                         ★ saved
                       </span>
                     )}
@@ -455,13 +450,13 @@ export default function DashboardPage() {
         </div>
 
         {/* Quick links */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl">
-          <h2 className="font-black text-lg mb-4" style={{ color: "#2b2740" }}>Quick links</h2>
-          <div className="flex flex-wrap gap-3">
-            <a href="/app" className="chip" style={{ fontSize: 14, padding: "8px 16px", cursor: "pointer" }}>
+        <div style={cardStyle("var(--r4)", "0.5deg")}>
+          <h2 style={{ ...sectionHeading, fontSize: 28 }}>Quick links</h2>
+          <div className="flex flex-wrap gap-3 mt-4">
+            <a href="/app" className="chip" style={{ fontSize: 14, padding: "9px 16px", cursor: "pointer", textDecoration: "none" }}>
               🎨 Activity library
             </a>
-            <a href="/" className="chip area" style={{ fontSize: 14, padding: "8px 16px", cursor: "pointer" }}>
+            <a href="/" className="chip area" style={{ fontSize: 14, padding: "9px 16px", cursor: "pointer", textDecoration: "none" }}>
               🏠 Landing page
             </a>
           </div>
@@ -478,15 +473,36 @@ export default function DashboardPage() {
   );
 }
 
+function cardStyle(radius: string, rotate: string): React.CSSProperties {
+  return {
+    background: "var(--paper)",
+    border: "2px solid var(--paper-edge)",
+    borderRadius: radius,
+    padding: 32,
+    boxShadow: "var(--shadow-paper)",
+    transform: `rotate(${rotate})`,
+  };
+}
+
+const sectionHeading: React.CSSProperties = {
+  fontFamily: "var(--font-display)",
+  fontSize: 32,
+  fontWeight: 700,
+  color: "var(--ink)",
+  margin: 0,
+  lineHeight: 1.1,
+};
+
 const inputStyle: React.CSSProperties = {
-  border: "2px solid #efeaf7",
-  borderRadius: 12,
+  border: "2px solid var(--paper-edge)",
+  borderRadius: "var(--r1)",
   padding: "10px 12px",
   fontFamily: "inherit",
   fontSize: 14,
   outline: "none",
   width: "100%",
   boxSizing: "border-box",
-  color: "#2b2740",
-  background: "white",
+  color: "var(--ink)",
+  background: "var(--paper)",
+  fontWeight: 600,
 };

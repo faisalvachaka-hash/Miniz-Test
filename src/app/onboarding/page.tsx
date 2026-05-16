@@ -65,7 +65,7 @@ export default function OnboardingPage() {
   if (checking) {
     return (
       <AuthLayout title="One moment… ⏳" subtitle="Setting things up">
-        <div className="text-center font-semibold" style={{ color: "#5d5878" }}>
+        <div className="text-center" style={{ color: "var(--ink-soft)", fontWeight: 700 }}>
           Loading…
         </div>
       </AuthLayout>
@@ -79,7 +79,7 @@ export default function OnboardingPage() {
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
-          <label className="block text-sm font-bold mb-1.5" style={{ color: "#2b2740" }}>
+          <label className="block text-sm font-black mb-1.5" style={{ color: "var(--ink)" }}>
             Child&apos;s name
           </label>
           <input
@@ -93,7 +93,7 @@ export default function OnboardingPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-bold mb-1.5" style={{ color: "#2b2740" }}>
+          <label className="block text-sm font-black mb-1.5" style={{ color: "var(--ink)" }}>
             Age
           </label>
           <select
@@ -120,7 +120,7 @@ export default function OnboardingPage() {
           {saving ? "Saving…" : "Continue to activities →"}
         </button>
 
-        <p className="text-center text-xs font-semibold" style={{ color: "#9b93b8" }}>
+        <p className="text-center text-xs font-bold" style={{ color: "var(--ink-faint)" }}>
           You can add more children any time from your dashboard.
         </p>
       </form>
@@ -129,14 +129,15 @@ export default function OnboardingPage() {
 }
 
 const inputStyle: React.CSSProperties = {
-  border: "2px solid #efeaf7",
-  borderRadius: 14,
+  border: "2px solid var(--paper-edge)",
+  borderRadius: "var(--r1)",
   padding: "12px 14px",
   fontFamily: "inherit",
   fontSize: 15,
   outline: "none",
   width: "100%",
   boxSizing: "border-box",
-  color: "#2b2740",
-  background: "white",
+  color: "var(--ink)",
+  background: "var(--cream)",
+  fontWeight: 600,
 };

@@ -21,15 +21,17 @@ export function ActivityModal({
         <div
           className="modal-header"
           style={{
-            background: `linear-gradient(135deg, ${activity.color}55 0%, rgba(255,255,255,0) 100%)`,
+            background: activity.color,
+            color: "var(--cream)",
+            borderBottom: "3px solid var(--paper-edge)",
           }}
         >
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ×
           </button>
           <div className="modal-emoji">{activity.emoji}</div>
-          <h2>{activity.title}</h2>
-          <div className="modal-sub">
+          <h2 style={{ color: "var(--cream)" }}>{activity.title}</h2>
+          <div className="modal-sub" style={{ color: "rgba(245, 232, 211, 0.85)" }}>
             {ageLabel} · {activity.area}
           </div>
         </div>

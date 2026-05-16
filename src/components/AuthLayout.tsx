@@ -10,32 +10,66 @@ type Props = {
 
 export default function AuthLayout({ title, subtitle, children }: Props) {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4"
-      style={{ background: "linear-gradient(135deg, #fff1f6 0%, #f0f9ff 40%, #fef8e1 100%)" }}>
+    <div className="min-h-screen flex items-center justify-center px-4 py-10" style={{ position: "relative" }}>
       <div className="blob b1" />
       <div className="blob b2" />
       <div className="blob b3" />
 
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md" style={{ position: "relative", zIndex: 1 }}>
         {/* Logo */}
-        <Link href="/" className="flex items-center justify-center gap-3 mb-8">
-          <div className="logo-dot" style={{ width: 36, height: 36 }} />
+        <Link
+          href="/"
+          className="flex items-center justify-center gap-3 mb-8"
+          style={{ textDecoration: "none" }}
+        >
+          <span className="logo-mark" style={{ width: 56, height: 56 }}>
+            <img src="/logo.png" alt="Mini Z and Me" />
+          </span>
           <span style={{
-            fontSize: 22,
-            fontWeight: 900,
-            background: "linear-gradient(90deg, #ff6fa3, #a37cf0, #4dc3ff)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
+            fontFamily: "var(--font-display)",
+            fontSize: 34,
+            fontWeight: 700,
+            color: "var(--clay)",
+            letterSpacing: 0.5,
+            lineHeight: 1,
           }}>
             Mini Z and Me
           </span>
         </Link>
 
         {/* Card */}
-        <div className="bg-white rounded-3xl p-8 shadow-xl">
-          <h1 className="text-2xl font-black mb-1" style={{ color: "#2b2740" }}>{title}</h1>
-          <p className="text-sm font-semibold mb-6" style={{ color: "#5d5878" }}>{subtitle}</p>
+        <div
+          style={{
+            background: "var(--paper)",
+            borderRadius: "var(--r2)",
+            padding: 32,
+            border: "2px solid var(--paper-edge)",
+            boxShadow: "var(--shadow-paper-lift)",
+            transform: "rotate(-0.3deg)",
+          }}
+        >
+          <h1
+            style={{
+              fontFamily: "var(--font-display)",
+              fontSize: 36,
+              fontWeight: 700,
+              color: "var(--ink)",
+              margin: 0,
+              lineHeight: 1.05,
+            }}
+          >
+            {title}
+          </h1>
+          <p
+            style={{
+              fontSize: 14,
+              fontWeight: 700,
+              color: "var(--ink-soft)",
+              margin: "8px 0 22px",
+            }}
+          >
+            {subtitle}
+          </p>
           {children}
         </div>
       </div>
