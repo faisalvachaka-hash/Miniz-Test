@@ -45,13 +45,49 @@ export const AGES: AgeGroup[] = [
   { age: 5, label: "5 years", sub: "Little learner", emoji: "📚", color: "#6b7a4f" }, // olive
 ];
 
+/**
+ * Map old bright "neon" activity colours stored in the DB to the warm
+ * Montessori palette used by the rest of the UI. Anything not in the map
+ * passes through unchanged so already-warm colours stay warm.
+ */
+const COLOR_WARM_MAP: Record<string, string> = {
+  // Bright blues → dusty blue
+  "#4dc3ff": "#7a93a6",
+  "#4dc3ff80": "#7a93a6",
+  // Mints / teals → sage
+  "#5ed9b1": "#8ba888",
+  "#5ed9b180": "#8ba888",
+  // Bright yellows → warm mustard
+  "#ffd43b": "#d4a949",
+  "#f5c842": "#d4a949",
+  "#ffe066": "#d4a949",
+  // Purples → dusty rose
+  "#a37cf0": "#c97a6b",
+  "#c084fc": "#c97a6b",
+  "#9b59b6": "#c97a6b",
+  // Hot pinks → dusty rose
+  "#ff6fa3": "#c97a6b",
+  "#ff8fa3": "#c97a6b",
+  "#ff6f91": "#c97a6b",
+  // Tangerines / oranges → terracotta clay
+  "#ff9a3c": "#b85a40",
+  "#ff7e29": "#b85a40",
+  // Specific known curated tones
+  "#ff6fa340": "#c97a6b",
+};
+
+export function warmColor(c: string | null | undefined): string {
+  if (!c) return "#8ba888"; // sage fallback
+  return COLOR_WARM_MAP[c.toLowerCase()] ?? c;
+}
+
 export function mapActivityFromDB(row: Record<string, unknown>): Activity {
   return {
     id: row.id as string,
     age: row.age as AgeKey,
     title: row.title as string,
     emoji: row.emoji as string,
-    color: row.color as string,
+    color: warmColor(row.color as string),
     area: row.area as string,
     subject: row.subject as string | undefined,
     duration: row.duration as string,
