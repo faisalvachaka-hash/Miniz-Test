@@ -450,16 +450,38 @@ export default function DashboardPage() {
                   <div style={{
                     background: "var(--cream)",
                     color: "var(--clay)",
-                    padding: "12px 18px",
+                    padding: "14px 18px",
                     borderRadius: "var(--r1)",
-                    fontWeight: 800,
-                    fontSize: 14,
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 700,
+                    fontSize: 22,
                     flex: 1,
                     minWidth: 200,
                     textAlign: "center",
                     border: "2px solid var(--paper-edge)",
+                    boxShadow: "0 4px 0 rgba(74, 52, 36, 0.2)",
+                    animation: "celebrate 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both",
+                    position: "relative",
                   }}>
                     🎉 Nicely done, {activeChild.name}!
+                    {/* Confetti burst — tiny stars flying out */}
+                    {[0, 1, 2, 3, 4, 5].map((i) => (
+                      <span
+                        key={i}
+                        style={{
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          fontSize: 16,
+                          pointerEvents: "none",
+                          animation: `confetti-burst 0.9s ease-out ${0.1 + i * 0.04}s both`,
+                          ["--cx" as string]: `${Math.cos((i / 6) * Math.PI * 2) * 80}px`,
+                          ["--cy" as string]: `${Math.sin((i / 6) * Math.PI * 2) * 60 - 30}px`,
+                        }}
+                      >
+                        {["⭐", "✨", "🌟", "💫", "⭐", "✨"][i]}
+                      </span>
+                    ))}
                   </div>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleAnotherIdea(); }}

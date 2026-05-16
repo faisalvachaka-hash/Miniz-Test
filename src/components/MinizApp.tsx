@@ -13,6 +13,7 @@ import {
 } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
 import { ActivityModal } from "@/components/ActivityModal";
+import { ScribbleStar, ScribbleSwirl, ScribbleHeart, ScribbleDashes } from "@/components/Scribbles";
 
 const SUBJECT_EMOJIS: Record<string, string> = {
   "Science":       "🔬",
@@ -329,7 +330,13 @@ export default function MinizApp() {
         </div>
       </header>
 
-      <main className="max-w-[1180px] mx-auto px-5 pb-20">
+      <main className="max-w-[1180px] mx-auto px-5 pb-20" style={{ position: "relative" }}>
+        {/* Decorative scribbles tucked into the page edges */}
+        <ScribbleStar style={{ top: 20, left: -20 }} size={40} />
+        <ScribbleSwirl style={{ top: 320, right: -10 }} size={48} />
+        <ScribbleHeart style={{ top: 760, left: -30 }} size={36} />
+        <ScribbleDashes style={{ top: 1100, right: 10 }} size={44} />
+
         {children.length > 0 && (
           <div className="flex items-center justify-center gap-2 flex-wrap mt-4 mb-2">
             <span className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--ink-faint)" }}>
@@ -401,9 +408,11 @@ export default function MinizApp() {
                 <div className="age-emoji">{a.emoji}</div>
                 <div className="age-label">{a.label}</div>
                 <div className="age-sub">{a.sub}</div>
-                <div className="age-count">
-                  {count} {count === 1 ? "activity" : "activities"}
-                </div>
+                {count > 0 && (
+                  <div className="age-count">
+                    {count} {count === 1 ? "idea" : "ideas"}
+                  </div>
+                )}
               </div>
             );
           })}
