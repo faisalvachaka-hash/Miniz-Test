@@ -11,6 +11,7 @@ Most recent first. Each entry is a feature that's live in the app.
 
 | Date | Feature | Notes |
 |---|---|---|
+| 16 May 2026 | **Today's adventure** | Big terracotta card at the top of `/dashboard` that picks one activity per day for the active child. Deterministic seed (date + child id) so it stays the same until midnight. "We did this!" records the completion in a new `completed_activities` table; "Try another" / "Not feeling it" reshuffles. Child chip switcher shows when there are 2+ kids |
 | 16 May 2026 | **"Tap each step to tick it off" hint** | Small italic line below "How to play" in the activity modal so users discover that steps are tickable |
 | 16 May 2026 | **Quick wins batch** | 🎲 Surprise me button, subject chip counts, full edit (name + age) for children, tickable steps in the activity modal with progress message, per-route page titles, custom "Lost in the woods" 404 page |
 | 16 May 2026 | **Personalised dashboard greeting** | "Welcome back, [email]" replaced with "Playing with Zara today?" using the active child's name. Handles 0, 1, 2 and 3+ children with Oxford-style joining |
@@ -38,7 +39,6 @@ _(Backlog empty — add new ideas here as they come up.)_
 
 | Idea | Why it matters |
 |---|---|
-| **"Today's activity" surface** | A single daily suggestion on the dashboard, picked from the active child's age, with a "we did this!" button. Single biggest engagement lever — turns the app from a one-time visit into a daily habit |
 | **Activity notes / journal** | After a parent does an activity, let them jot a quick note ("Zara loved the foil bit, hated the wet sponge"). Builds a private journal per child. Strong emotional payoff |
 | **Themed / seasonal activity collections** | Curated bundles tied to a time of year or celebration — Christmas, Eid, Diwali, Hanukkah, summer, winter, Halloween. Filter chip + landing tiles that surface the right activities at the right time |
 | **Worksheets & printable resources per activity** | For each activity, attach optional supporting materials — keyword cards, colouring sheets, image prompts, vocabulary lists — that parents can print or view |
@@ -82,4 +82,4 @@ Ideas captured but not yet evaluated. Move up the list when a real reason appear
 
 ---
 
-*Last updated: 16 May 2026 — added discoverability hint for tickable steps*
+*Last updated: 16 May 2026 — shipped Today's adventure feature*

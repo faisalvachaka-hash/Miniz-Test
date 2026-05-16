@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { mapActivityFromDB, AGES, type Activity, type AgeKey, type Child } from "@/lib/data";
@@ -8,6 +8,23 @@ import { ActivityModal } from "@/components/ActivityModal";
 import type { User } from "@supabase/supabase-js";
 
 type LibraryEntry = { activity: Activity; source: "custom" | "saved" };
+
+const ACTIVE_CHILD_KEY = "miniz_active_child_id";
+
+// Day-of-year number for deterministic daily seeding
+function dayOfYear(d = new Date()): number {
+  const start = new Date(d.getFullYear(), 0, 0);
+  const diff = d.getTime() - start.getTime();
+  return Math.floor(diff / 86_400_000);
+}
+
+// Stable string hash for picking the daily activity
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -25,6 +42,12 @@ export default function DashboardPage() {
   const [editName, setEditName] = useState("");
   const [editAge, setEditAge] = useState<AgeKey>(2);
 
+  // Today's adventure
+  const [activeChildId, setActiveChildId] = useState<string | null>(null);
+  const [curated, setCurated] = useState<Activity[]>([]);
+  const [completedToday, setCompletedToday] = useState<Set<string>>(new Set());
+  const [reshuffleSalt, setReshuffleSalt] = useState(0);
+
   function startEditing(child: Child) {
     setEditName(child.name);
     setEditAge(child.age);
@@ -39,8 +62,15 @@ export default function DashboardPage() {
       }
       setUser(data.user);
       const uid = data.user.id;
+      const todayStartIso = new Date().toISOString().slice(0, 10) + "T00:00:00Z";
 
-      const [{ data: customs }, { data: saves }, { data: kids }] = await Promise.all([
+      const [
+        { data: customs },
+        { data: saves },
+        { data: kids },
+        { data: curatedRows },
+        { data: completions },
+      ] = await Promise.all([
         supabase
           .from("activities")
           .select("*")
@@ -55,6 +85,16 @@ export default function DashboardPage() {
           .from("children")
           .select("id, name, age")
           .order("created_at", { ascending: true }),
+        supabase
+          .from("activities")
+          .select("*")
+          .is("user_id", null)
+          .order("age", { ascending: true }),
+        supabase
+          .from("completed_activities")
+          .select("activity_id")
+          .eq("user_id", uid)
+          .gte("completed_at", todayStartIso),
       ]);
 
       const entries: LibraryEntry[] = [];
@@ -72,10 +112,67 @@ export default function DashboardPage() {
         }
       }
       setLibrary(entries);
-      if (kids) setChildren(kids as Child[]);
+      if (curatedRows) setCurated(curatedRows.map(mapActivityFromDB));
+      if (completions) setCompletedToday(new Set(completions.map((c) => c.activity_id as string)));
+
+      if (kids) {
+        const list = kids as Child[];
+        setChildren(list);
+        // Resolve which child is "active": localStorage → first child → null
+        const stored = typeof window !== "undefined"
+          ? window.localStorage.getItem(ACTIVE_CHILD_KEY)
+          : null;
+        const active = list.find((c) => c.id === stored) ?? list[0] ?? null;
+        setActiveChildId(active?.id ?? null);
+      }
       setLoading(false);
     });
   }, [router]);
+
+  // Persist the active child to localStorage so /app and /dashboard stay in sync
+  useEffect(() => {
+    if (activeChildId && typeof window !== "undefined") {
+      window.localStorage.setItem(ACTIVE_CHILD_KEY, activeChildId);
+    }
+  }, [activeChildId]);
+
+  const activeChild = children.find((c) => c.id === activeChildId) ?? null;
+
+  // Pick today's adventure for the active child — deterministic per (date, child)
+  // unless the user has hit "show me another" (reshuffleSalt)
+  const todaysActivity = useMemo(() => {
+    if (!activeChild || curated.length === 0) return null;
+    const pool = curated.filter((a) => a.age === activeChild.age);
+    if (pool.length === 0) return null;
+    const seed = hashStr(`${activeChild.id}:${dayOfYear()}:${reshuffleSalt}`);
+    return pool[seed % pool.length];
+  }, [curated, activeChild, reshuffleSalt]);
+
+  const didItToday = todaysActivity ? completedToday.has(String(todaysActivity.id)) : false;
+
+  async function handleWeDidIt() {
+    if (!user || !activeChild || !todaysActivity) return;
+    // Optimistic
+    setCompletedToday((prev) => new Set(prev).add(String(todaysActivity.id)));
+    const { error } = await supabase.from("completed_activities").insert({
+      user_id: user.id,
+      child_id: activeChild.id,
+      activity_id: todaysActivity.id,
+    });
+    if (error) {
+      console.error("Failed to record completion:", error.message);
+      // Rollback
+      setCompletedToday((prev) => {
+        const next = new Set(prev);
+        next.delete(String(todaysActivity.id));
+        return next;
+      });
+    }
+  }
+
+  function handleAnotherIdea() {
+    setReshuffleSalt((s) => s + 1);
+  }
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -211,6 +308,219 @@ export default function DashboardPage() {
             Signed in as <span style={{ color: "var(--clay)" }}>{user?.email}</span>
           </p>
         </div>
+
+        {/* Today's adventure */}
+        {activeChild && todaysActivity && (
+          <div
+            style={{
+              ...cardStyle("var(--r3)", "0.5deg"),
+              background: "var(--clay)",
+              border: "2px solid var(--clay-dark)",
+              padding: 0,
+              overflow: "hidden",
+              marginBottom: 24,
+            }}
+          >
+            {/* Top stripe with title + child switcher */}
+            <div style={{ padding: "20px 28px 16px", color: "var(--cream)" }}>
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div style={{
+                  fontFamily: "var(--font-display)",
+                  fontSize: 28,
+                  fontWeight: 700,
+                  letterSpacing: 0.3,
+                  lineHeight: 1,
+                }}>
+                  ✨ Today&apos;s adventure
+                </div>
+                {children.length > 1 && (
+                  <div className="flex gap-2 flex-wrap">
+                    {children.map((c) => {
+                      const isActive = c.id === activeChildId;
+                      return (
+                        <button
+                          key={c.id}
+                          onClick={() => setActiveChildId(c.id)}
+                          style={{
+                            background: isActive ? "var(--cream)" : "transparent",
+                            color: isActive ? "var(--clay)" : "var(--cream)",
+                            border: "2px solid var(--cream)",
+                            borderRadius: "var(--r-pill)",
+                            padding: "6px 14px",
+                            fontFamily: "inherit",
+                            fontWeight: 800,
+                            fontSize: 12,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {AGES.find((a) => a.age === c.age)?.emoji} {c.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              <p style={{
+                marginTop: 4,
+                fontSize: 14,
+                fontWeight: 700,
+                color: "rgba(245, 232, 211, 0.85)",
+              }}>
+                A play idea picked for {activeChild.name}, just for today.
+              </p>
+            </div>
+
+            {/* Activity body */}
+            <div
+              onClick={() => setSelectedActivity(todaysActivity)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedActivity(todaysActivity);
+                }
+              }}
+              style={{
+                background: "var(--paper)",
+                margin: "0 18px 18px",
+                borderRadius: "var(--r2)",
+                padding: "22px 22px 20px",
+                border: "2px solid var(--paper-edge)",
+                cursor: "pointer",
+                position: "relative",
+                borderTop: `8px solid ${todaysActivity.color}`,
+              }}
+            >
+              <div className="flex items-start gap-4 flex-wrap">
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: "50% 45% 50% 50% / 50% 50% 45% 50%",
+                    background: todaysActivity.color,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 32,
+                    flexShrink: 0,
+                    boxShadow: "0 3px 0 rgba(74, 52, 36, 0.15)",
+                  }}
+                >
+                  {todaysActivity.emoji}
+                </div>
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{
+                    fontFamily: "var(--font-display)",
+                    fontSize: 28,
+                    fontWeight: 700,
+                    color: "var(--ink)",
+                    lineHeight: 1.05,
+                  }}>
+                    {todaysActivity.title}
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    <span className="chip">{AGES.find((x) => x.age === todaysActivity.age)?.label}</span>
+                    <span className="chip duration">⏱ {todaysActivity.duration}</span>
+                    <span className="chip area">{todaysActivity.area}</span>
+                  </div>
+                  <p style={{
+                    marginTop: 10,
+                    color: "var(--ink-soft)",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    fontStyle: "italic",
+                  }}>
+                    Click anywhere on this card to see the full play plan ↗
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action row */}
+            <div style={{
+              padding: "0 28px 22px",
+              display: "flex",
+              gap: 12,
+              flexWrap: "wrap",
+              alignItems: "center",
+            }}>
+              {didItToday ? (
+                <>
+                  <div style={{
+                    background: "var(--cream)",
+                    color: "var(--clay)",
+                    padding: "12px 18px",
+                    borderRadius: "var(--r1)",
+                    fontWeight: 800,
+                    fontSize: 14,
+                    flex: 1,
+                    minWidth: 200,
+                    textAlign: "center",
+                    border: "2px solid var(--paper-edge)",
+                  }}>
+                    🎉 Nicely done, {activeChild.name}!
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleAnotherIdea(); }}
+                    style={{
+                      background: "var(--cream)",
+                      color: "var(--clay)",
+                      border: "none",
+                      borderRadius: "var(--r1)",
+                      padding: "12px 22px",
+                      fontFamily: "inherit",
+                      fontWeight: 800,
+                      fontSize: 14,
+                      cursor: "pointer",
+                      boxShadow: "0 4px 0 rgba(74, 52, 36, 0.2)",
+                    }}
+                  >
+                    🎲 Try another
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleWeDidIt(); }}
+                    style={{
+                      background: "var(--cream)",
+                      color: "var(--clay)",
+                      border: "none",
+                      borderRadius: "var(--r1)",
+                      padding: "14px 26px",
+                      fontFamily: "inherit",
+                      fontWeight: 800,
+                      fontSize: 15,
+                      cursor: "pointer",
+                      boxShadow: "0 5px 0 rgba(74, 52, 36, 0.25)",
+                      flex: 1,
+                      minWidth: 220,
+                    }}
+                  >
+                    ✓ We did this!
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleAnotherIdea(); }}
+                    style={{
+                      background: "transparent",
+                      color: "var(--cream)",
+                      border: "2px solid var(--cream)",
+                      borderRadius: "var(--r1)",
+                      padding: "12px 20px",
+                      fontFamily: "inherit",
+                      fontWeight: 800,
+                      fontSize: 14,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Not feeling it
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Children card */}
         <div style={cardStyle("var(--r2)", "0.3deg")} className="mb-6">

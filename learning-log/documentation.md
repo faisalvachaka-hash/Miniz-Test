@@ -78,7 +78,8 @@ Project 1 - Mini Z App/
 │   ├── seed_arts_crafts.sql    ← 120 Arts & Crafts activities (ages 0–5, 20 per age)
 │   ├── seed_nature.sql         ← 120 Outdoor / Nature activities (ages 0–5, 20 per age)
 │   ├── children_table.sql      ← Children table CREATE + RLS for child profiles
-│   └── saved_activities_table.sql ← Join table tracking which curated activities each user has saved
+│   ├── saved_activities_table.sql ← Join table tracking which curated activities each user has saved
+│   └── completed_activities_table.sql ← Records each activity a child has completed (powers "Today's adventure")
 │
 ├── prototype/
 │   └── index.html              ← The original single-file HTML prototype (kept for reference)
@@ -140,7 +141,7 @@ The onboarding page is a one-time setup screen for new users. It appears the fir
 
 ### Dashboard — `/dashboard`
 
-The dashboard is a protected page — only logged-in users can see it. When the page loads, it checks for a logged-in user; if none, it redirects to `/login`. The page is organised into three cards:
+The dashboard is a protected page — only logged-in users can see it. When the page loads, it checks for a logged-in user; if none, it redirects to `/login`. The page is organised into four cards:
 
 1. **Welcome card** — a personalised greeting built from the user's child profiles:
    - No children → "Welcome back!"
@@ -149,8 +150,13 @@ The dashboard is a protected page — only logged-in users can see it. When the 
    - Three or more → "Playing with Zara, Sam & Mia today?" (Oxford-style joining)
 
    The user's email appears underneath as small secondary text ("Signed in as you@example.com") so they can still confirm which account they're in
-2. **My children card** — lists every child profile (avatar + name + age stage). Each row has an **Edit** button which switches the row into an inline editor showing both name and age fields, with **Save** and **Cancel** buttons. Enter saves, Escape cancels. There's also a **Remove** button (with confirmation). At the top of the card, a **+ Add child** button reveals a small form for name and age. Brand-new users will see an empty state if they delete all their children
-3. **My library card** — a single merged list of everything in the user's library: activities they've built with the builder (tagged "✨ custom") plus curated activities they've starred (tagged "★ saved"). Every card has an `×` button in the top-right. For a starred curated activity, the `×` simply unsaves it (the activity itself stays in the public library on `/app`). For a custom activity, the `×` asks for confirmation and then permanently deletes it. If the library is empty, an encouraging empty state points the user back to `/app`
+2. **Today's adventure card** — a prominent terracotta block that suggests one activity a day for the active child. The pick is **deterministic per (date, child)** — it stays the same all day, then changes at midnight — so the dashboard feels like a daily news feed. Two CTAs:
+   - **✓ We did this!** records a completion in the `completed_activities` table and flips the card to a "🎉 Nicely done, [child's name]!" success state
+   - **Not feeling it** / **🎲 Try another** reshuffles to a different activity for the same age, without recording anything
+
+   If the user has multiple children, a small chip switcher in the card header lets them flip between kids. The active child is shared with `/app` via the same `miniz_active_child_id` localStorage key, so switching on either page is reflected everywhere
+3. **My children card** — lists every child profile (avatar + name + age stage). Each row has an **Edit** button which switches the row into an inline editor showing both name and age fields, with **Save** and **Cancel** buttons. Enter saves, Escape cancels. There's also a **Remove** button (with confirmation). At the top of the card, a **+ Add child** button reveals a small form for name and age. Brand-new users will see an empty state if they delete all their children
+4. **My library card** — a single merged list of everything in the user's library: activities they've built with the builder (tagged "✨ custom") plus curated activities they've starred (tagged "★ saved"). Every card has an `×` button in the top-right. For a starred curated activity, the `×` simply unsaves it (the activity itself stays in the public library on `/app`). For a custom activity, the `×` asks for confirmation and then permanently deletes it. If the library is empty, an encouraging empty state points the user back to `/app`
 
 There is a **Log out** button in the top-right and quick links at the bottom that jump back to the activity library or the landing page.
 
@@ -421,6 +427,7 @@ These features are planned but not yet built:
 - **Hand-crafted Montessori-toy redesign** — new warm terracotta + cream palette, handwritten Caveat headings, paper-feel cards with imperfect corners, chunky "wooden block" buttons, brand logo image
 - **Personalised dashboard greeting** — "Playing with Zara today?" instead of "Welcome back, [email]"
 - **Quick wins batch** — 🎲 Surprise me button, subject chip counts, inline edit-name-and-age for children, tickable steps in the activity modal with progress message, per-route browser tab titles, custom 🐾 "Lost in the woods" 404 page
+- **Today's adventure** — one daily activity suggestion per child on the dashboard, with "We did this!" tracking in a new `completed_activities` table. Deterministic daily pick that resets at midnight
 
 ---
 
@@ -445,4 +452,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — personalised greeting + quick wins batch (surprise me, chip counts, edit child, tick steps, page titles, 404)*
+*Last updated: 16 May 2026 — shipped Today's adventure (daily activity suggestion + completion tracking)*
