@@ -285,7 +285,7 @@ export function ActivityModal({
           </div>
 
           <div className="modal-section">
-            <h3>▶️ How to play</h3>
+            <h3>👣 How to play</h3>
             <p style={{
               fontSize: 13,
               color: "var(--ink-soft)",

@@ -443,6 +443,7 @@ These features are planned but not yet built:
 - **Age-gated activity grid** — the activity grid only appears once a parent has selected an age (intentional browsing, calmer first paint)
 - **Activity notes / journal** — private memory journal per `(child, activity)` inside the activity modal. Notes are saved to a new `activity_notes` Supabase table with RLS
 - **Save toggle inside the activity modal** — mirrors the card-level star button, syncs with the rest of the UI
+- **"How to play" emoji updated** — changed from ▶️ (looked like a video button) to 👣 (footprints), which better communicates "follow these steps" in a hands-on activity context
 
 ---
 
@@ -467,4 +468,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — save toggle now lives inside the activity modal too*
+*Last updated: 16 May 2026 — "How to play" emoji changed from ▶️ to 👣*
