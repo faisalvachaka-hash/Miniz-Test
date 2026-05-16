@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { AGES, type Activity } from "@/lib/data";
 
 export function ActivityModal({
@@ -10,6 +11,16 @@ export function ActivityModal({
   onClose: () => void;
 }) {
   const ageLabel = AGES.find((a) => a.age === activity.age)?.label ?? "";
+  const [done, setDone] = useState<Set<number>>(new Set());
+
+  function toggleStep(i: number) {
+    setDone((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  }
   return (
     <div
       className="modal-backdrop"
@@ -71,10 +82,37 @@ export function ActivityModal({
           <div className="modal-section">
             <h3>▶️ How to play</h3>
             <ol className="steps-list">
-              {activity.steps.map((s, i) => (
-                <li key={i}>{s}</li>
-              ))}
+              {activity.steps.map((s, i) => {
+                const isDone = done.has(i);
+                return (
+                  <li
+                    key={i}
+                    onClick={() => toggleStep(i)}
+                    style={{
+                      cursor: "pointer",
+                      opacity: isDone ? 0.5 : 1,
+                      textDecoration: isDone ? "line-through" : "none",
+                      transition: "opacity 0.15s",
+                    }}
+                  >
+                    {s}
+                  </li>
+                );
+              })}
             </ol>
+            {activity.steps.length > 0 && done.size > 0 && (
+              <div style={{
+                marginTop: 12,
+                fontSize: 13,
+                fontWeight: 700,
+                color: "var(--sage-dark)",
+                textAlign: "center",
+              }}>
+                {done.size === activity.steps.length
+                  ? "🎉 All done! Great play."
+                  : `${done.size} of ${activity.steps.length} done — keep going!`}
+              </div>
+            )}
           </div>
 
           <div className="modal-section">

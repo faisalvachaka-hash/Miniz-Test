@@ -22,6 +22,14 @@ export default function DashboardPage() {
   const [newAge, setNewAge] = useState<AgeKey>(2);
   const [addError, setAddError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editAge, setEditAge] = useState<AgeKey>(2);
+
+  function startEditing(child: Child) {
+    setEditName(child.name);
+    setEditAge(child.age);
+    setEditingId(child.id);
+  }
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data }) => {
@@ -97,10 +105,18 @@ export default function DashboardPage() {
     setShowAdd(false);
   }
 
-  async function handleUpdateAge(child: Child, age: AgeKey) {
-    const { error } = await supabase.from("children").update({ age }).eq("id", child.id);
+  async function handleUpdateChild(child: Child, updates: { name?: string; age?: AgeKey }) {
+    const trimmed = updates.name?.trim();
+    const patch: { name?: string; age?: AgeKey } = {};
+    if (trimmed && trimmed !== child.name) patch.name = trimmed;
+    if (updates.age !== undefined && updates.age !== child.age) patch.age = updates.age;
+    if (Object.keys(patch).length === 0) {
+      setEditingId(null);
+      return;
+    }
+    const { error } = await supabase.from("children").update(patch).eq("id", child.id);
     if (!error) {
-      setChildren((prev) => prev.map((c) => (c.id === child.id ? { ...c, age } : c)));
+      setChildren((prev) => prev.map((c) => (c.id === child.id ? { ...c, ...patch } : c)));
     }
     setEditingId(null);
   }
@@ -296,43 +312,74 @@ export default function DashboardPage() {
                     >
                       {ageInfo?.emoji}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{
-                        fontFamily: "var(--font-display)",
-                        fontWeight: 700,
-                        color: "var(--ink)",
-                        fontSize: 24,
-                        lineHeight: 1.1,
-                      }}>
-                        {c.name}
-                      </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                       {isEditing ? (
-                        <select
-                          value={c.age}
-                          onChange={(e) => handleUpdateAge(c, Number(e.target.value) as AgeKey)}
-                          autoFocus
-                          style={{ ...inputStyle, padding: "4px 8px", fontSize: 13, marginTop: 4 }}
-                        >
-                          {AGES.map((a) => (
-                            <option key={a.age} value={a.age}>
-                              {a.label}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <div style={{ color: "var(--ink-soft)", fontSize: 13, fontWeight: 700 }}>
-                          {ageInfo?.label} · {ageInfo?.sub}
+                        <div className="flex flex-wrap gap-2 items-center">
+                          <input
+                            type="text"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            autoFocus
+                            style={{ ...inputStyle, fontSize: 14, padding: "6px 10px", width: 140 }}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleUpdateChild(c, { name: editName, age: editAge });
+                              if (e.key === "Escape") setEditingId(null);
+                            }}
+                          />
+                          <select
+                            value={editAge}
+                            onChange={(e) => setEditAge(Number(e.target.value) as AgeKey)}
+                            style={{ ...inputStyle, fontSize: 13, padding: "6px 10px", width: 140 }}
+                          >
+                            {AGES.map((a) => (
+                              <option key={a.age} value={a.age}>
+                                {a.label}
+                              </option>
+                            ))}
+                          </select>
                         </div>
+                      ) : (
+                        <>
+                          <div style={{
+                            fontFamily: "var(--font-display)",
+                            fontWeight: 700,
+                            color: "var(--ink)",
+                            fontSize: 24,
+                            lineHeight: 1.1,
+                          }}>
+                            {c.name}
+                          </div>
+                          <div style={{ color: "var(--ink-soft)", fontSize: 13, fontWeight: 700 }}>
+                            {ageInfo?.label} · {ageInfo?.sub}
+                          </div>
+                        </>
                       )}
                     </div>
-                    {!isEditing && (
+                    {isEditing ? (
                       <>
                         <button
-                          onClick={() => setEditingId(c.id)}
+                          onClick={() => handleUpdateChild(c, { name: editName, age: editAge })}
+                          className="btn-primary"
+                          style={{ fontSize: 12, padding: "7px 14px" }}
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
                           className="btn-secondary"
                           style={{ fontSize: 12, padding: "7px 12px" }}
                         >
-                          Edit age
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => startEditing(c)}
+                          className="btn-secondary"
+                          style={{ fontSize: 12, padding: "7px 12px" }}
+                        >
+                          Edit
                         </button>
                         <button
                           onClick={() => handleDeleteChild(c)}

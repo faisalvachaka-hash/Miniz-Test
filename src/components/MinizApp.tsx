@@ -134,10 +134,13 @@ export default function MinizApp() {
   }, [allActivities]);
 
   const subjects = useMemo(() => {
-    const seen = new Set<string>();
-    for (const a of allActivities) if (a.subject) seen.add(a.subject);
-    return Array.from(seen).sort().map((label) => ({
+    const counts: Record<string, number> = {};
+    for (const a of allActivities) {
+      if (a.subject) counts[a.subject] = (counts[a.subject] ?? 0) + 1;
+    }
+    return Object.keys(counts).sort().map((label) => ({
       label,
+      count: counts[label],
       emoji: SUBJECT_EMOJIS[label] ?? "📚",
     }));
   }, [allActivities]);
@@ -170,6 +173,13 @@ export default function MinizApp() {
     setActiveChildId(child.id);
     setCurrentAge(child.age);
     setBuilderAge(child.age);
+  }
+
+  function handleSurpriseMe() {
+    const pool = filteredActivities.length > 0 ? filteredActivities : allActivities;
+    if (pool.length === 0) return;
+    const random = pool[Math.floor(Math.random() * pool.length)];
+    setSelectedId(random.id);
   }
 
   async function handleToggleSave(activityId: string | number, event: React.MouseEvent) {
@@ -422,15 +432,35 @@ export default function MinizApp() {
                   fontWeight: 800,
                 }}
               >
-                {s.emoji} {s.label}
+                {s.emoji} {s.label}{" "}
+                <span style={{
+                  opacity: 0.7,
+                  fontWeight: 700,
+                  fontSize: 11,
+                  marginLeft: 2,
+                }}>
+                  ({s.count})
+                </span>
               </button>
             );
           })}
         </div>
 
-        <div className="section-title">
+        <div className="section-title" style={{ flexWrap: "wrap" }}>
           Activities <span className="pill">{currentAgeLabel}</span>
           {currentSubject && <span className="pill">{currentSubjectLabel}</span>}
+          <button
+            onClick={handleSurpriseMe}
+            className="btn-secondary"
+            style={{
+              marginLeft: "auto",
+              fontSize: 13,
+              padding: "8px 16px",
+              fontFamily: "inherit",
+            }}
+          >
+            🎲 Surprise me!
+          </button>
         </div>
 
         {loadingActivities ? (

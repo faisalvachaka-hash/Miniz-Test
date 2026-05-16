@@ -11,6 +11,7 @@ Most recent first. Each entry is a feature that's live in the app.
 
 | Date | Feature | Notes |
 |---|---|---|
+| 16 May 2026 | **Quick wins batch** | 🎲 Surprise me button, subject chip counts, full edit (name + age) for children, tickable steps in the activity modal with progress message, per-route page titles, custom "Lost in the woods" 404 page |
 | 16 May 2026 | **Personalised dashboard greeting** | "Welcome back, [email]" replaced with "Playing with Zara today?" using the active child's name. Handles 0, 1, 2 and 3+ children with Oxford-style joining |
 | 16 May 2026 | **Montessori-toy redesign** | Warm terracotta + cream palette, handwritten Caveat headings, paper-feel cards with imperfect corners, chunky "wooden block" buttons, brand logo image. See `documentation.md` §8 for the full design system |
 | 16 May 2026 | **Save curated activities to library** | Star button on every curated card, unified library view on `/dashboard` with `×` remove buttons. New `saved_activities` join table with RLS |
@@ -28,14 +29,7 @@ Most recent first. Each entry is a feature that's live in the app.
 
 Small bites that punch above their weight. Pick freely.
 
-| Idea | Effort | Why |
-|---|---|---|
-| **"Surprise me!" button** | ~15 min | A button on `/app` that picks a random activity for the active child's age and opens the modal. Pure delight |
-| **Subject chip counts** | ~10 min | Show "(120)" after each subject filter chip so parents see how big each category is |
-| **Edit child's name** | ~15 min | Extend the existing inline edit-age pattern on `/dashboard` to also edit the name |
-| **Tick steps done in the modal** | ~20 min | Checkboxes next to each step that strike through when ticked. Local-only, no DB. Makes the modal useful during play |
-| **Page titles per route** | ~10 min | `<title>` per page (e.g. "Log in · Mini Z and Me") so browser tabs are readable |
-| **404 page** | ~15 min | Custom warm "lost in the woods" page instead of Next's default |
+_(Backlog empty — add new ideas here as they come up.)_
 
 ---
 
@@ -87,4 +81,4 @@ Ideas captured but not yet evaluated. Move up the list when a real reason appear
 
 ---
 
-*Last updated: 16 May 2026 — shipped personalised dashboard greeting*
+*Last updated: 16 May 2026 — shipped full Quick Wins batch (surprise me, chip counts, edit child, tick steps, page titles, 404)*
