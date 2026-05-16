@@ -444,6 +444,7 @@ These features are planned but not yet built:
 - **Activity notes / journal** — private memory journal per `(child, activity)` inside the activity modal. Notes are saved to a new `activity_notes` Supabase table with RLS
 - **Save toggle inside the activity modal** — mirrors the card-level star button, syncs with the rest of the UI
 - **"How to play" emoji updated** — changed from ▶️ (looked like a video button) to 👣 (footprints), which better communicates "follow these steps" in a hands-on activity context
+- **Friendlier signup error for existing emails** — when someone tries to sign up with an email that already has an account, the signup page now shows "An account with this email already exists. Try logging in instead." (Supabase, for security reasons, doesn't return a clear error in this case — it returns a user object with an empty `identities` array, which we now detect and translate into a clear, friendly message)
 
 ---
 
@@ -468,4 +469,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — "How to play" emoji changed from ▶️ to 👣*
+*Last updated: 16 May 2026 — friendlier signup error when email already exists*
