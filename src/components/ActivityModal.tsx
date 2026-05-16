@@ -324,7 +324,7 @@ export function ActivityModal({
               }}>
                 {done.size === activity.steps.length
                   ? "🎉 All done! Great play."
-                  : `${done.size} of ${activity.steps.length} done — keep going!`}
+                  : `${done.size} of ${activity.steps.length} done. Keep going!`}
               </div>
             )}
           </div>
@@ -340,14 +340,14 @@ export function ActivityModal({
                 fontStyle: "italic",
                 margin: "-4px 0 12px",
               }}>
-                A private memory book. Only you can see these notes.
+                Your private memory book. Only you can see what you write here.
               </p>
 
               <form onSubmit={handleAddNote} style={{ marginBottom: 14 }}>
                 <textarea
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
-                  placeholder={`e.g. ${activeChild.name} loved squishing the foam — wanted to do it twice`}
+                  placeholder={`e.g. ${activeChild.name} loved squishing the foam, wanted to do it twice`}
                   rows={2}
                   style={{
                     width: "100%",
@@ -396,8 +396,8 @@ export function ActivityModal({
                     borderRadius: "var(--r1)",
                   }}
                 >
-                  No memories yet for this activity.
-                  <br />Jot a quick note above to start the journal.
+                  No memories yet for this one.
+                  <br />Pop a quick note above to start the journal.
                 </div>
               ) : (
                 <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
@@ -469,7 +469,7 @@ export function ActivityModal({
           <div className="modal-section">
             <h3>🌱 Links back to</h3>
             <div className="prior-stage">
-              <div className="prior-stage-label">Earlier development stage</div>
+              <div className="prior-stage-label">Where this builds from</div>
               <div className="prior-stage-title">{activity.prior.stage}</div>
               <div className="prior-stage-desc">{activity.prior.desc}</div>
             </div>

@@ -15,9 +15,9 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Mini Z and Me — Early Years Play & Learning",
+  title: "Mini Z and Me · Early Years Play & Learning",
   description:
-    "Playful learning activities for tiny humans, ages 0 to 5. Curated and custom-built play ideas with materials, steps, and developmental links.",
+    "Hundreds of play ideas for babies, toddlers and preschoolers. Curated activities and a custom builder, with simple steps and the reasons behind each one.",
 };
 
 export default function RootLayout({

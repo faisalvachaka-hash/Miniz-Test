@@ -446,6 +446,7 @@ These features are planned but not yet built:
 - **"How to play" emoji updated** — changed from ▶️ (looked like a video button) to 👣 (footprints), which better communicates "follow these steps" in a hands-on activity context
 - **Friendlier signup error for existing emails** — when someone tries to sign up with an email that already has an account, the signup page now shows "An account with this email already exists. Try logging in instead." (Supabase, for security reasons, doesn't return a clear error in this case — it returns a user object with an empty `identities` array, which we now detect and translate into a clear, friendly message)
 - **Two new developmental-milestone cards on the landing page** — added 🎨 Creativity & imagination (dusty-blue) and 🌍 Understanding the world (olive) to the "Built on research" badge grid. The grid now shows 6 cards, all colour-coded against the palette already used for age tiles. The new milestones round out the EYFS-aligned set, complementing the existing four (Cognitive, Social, Fine motor, Language)
+- **Humanised all copy across the app** — full sweep of every user-facing string: landing page, login/signup/forgot/reset, onboarding, /app, /dashboard, the activity modal, the 404 page, the small fallback activities in `data.ts`, and all five SQL seed files (seed.sql plus the four subject seeds). Removed every em dash from prose, swapped formal phrases for plain English, varied sentence length and warmed up the voice so it reads like a real parent wrote it. The 490 SQL-seeded activities were rewritten too; you'll need to re-run the SQL files against Supabase to refresh the seeded content in your database
 
 ---
 
@@ -470,4 +471,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — added Creativity & imagination + Understanding the world developmental-milestone cards*
+*Last updated: 16 May 2026 · humanised all copy across the app and SQL seeds*

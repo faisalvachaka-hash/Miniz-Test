@@ -331,7 +331,7 @@ export default function MinizApp() {
         <div className="mt-4" style={{ color: "var(--ink-soft)", fontSize: 16, fontWeight: 700 }}>
           {activeChild
             ? `Playing with ${activeChild.name} · age ${activeChild.age}`
-            : "Playful learning for tiny humans · ages 0 to 5"}
+            : "Playful learning for tiny humans, ages 0 to 5"}
         </div>
       </header>
 
@@ -515,13 +515,13 @@ export default function MinizApp() {
               Pick an age to begin
             </div>
             <p style={{ fontSize: 14, fontWeight: 600, color: "var(--ink-soft)", margin: 0 }}>
-              Tap one of the age blocks above to see activities for that stage.
+              Tap one of the age blocks above and we&apos;ll show you what to play.
             </p>
           </div>
         ) : filteredActivities.length === 0 ? (
           <div className="text-center py-12" style={{ color: "var(--ink-soft)", fontWeight: 700 }}>
             <span className="block text-6xl mb-2.5">🌱</span>
-            No activities for this filter yet — try the builder below!
+            Nothing here yet for this combo. Try building your own below.
           </div>
         ) : (
           <div
@@ -620,12 +620,12 @@ export default function MinizApp() {
                 value={builderAge}
                 onChange={(e) => setBuilderAge(Number(e.target.value) as AgeKey)}
               >
-                <option value={0}>0 — Baby</option>
-                <option value={1}>1 — Toddler</option>
-                <option value={2}>2 — Tiny explorer</option>
-                <option value={3}>3 — Curious kid</option>
-                <option value={4}>4 — Pre-schooler</option>
-                <option value={5}>5 — Little learner</option>
+                <option value={0}>0 · Baby</option>
+                <option value={1}>1 · Toddler</option>
+                <option value={2}>2 · Tiny explorer</option>
+                <option value={3}>3 · Curious kid</option>
+                <option value={4}>4 · Pre-schooler</option>
+                <option value={5}>5 · Little learner</option>
               </select>
               <button className="btn-primary" onClick={handleBuild} disabled={saving}>
                 {saving ? "Saving…" : "✨ Create activity"}
@@ -653,7 +653,7 @@ export default function MinizApp() {
           marginTop: 40,
         }}
       >
-        Made with love for curious little minds · Mini Z and Me © 2026
+        Made with love for curious little minds. Mini Z and Me © 2026
       </footer>
 
       {selectedActivity && (

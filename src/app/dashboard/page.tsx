@@ -366,7 +366,7 @@ export default function DashboardPage() {
                 fontWeight: 700,
                 color: "rgba(245, 232, 211, 0.85)",
               }}>
-                A play idea picked for {activeChild.name}, just for today.
+                A play idea for {activeChild.name}, fresh for today.
               </p>
             </div>
 
@@ -431,7 +431,7 @@ export default function DashboardPage() {
                     fontWeight: 700,
                     fontStyle: "italic",
                   }}>
-                    Click anywhere on this card to see the full play plan ↗
+                    Tap the card to see how to play it ↗
                   </p>
                 </div>
               </div>
@@ -557,7 +557,7 @@ export default function DashboardPage() {
             </button>
           </div>
           <p style={{ color: "var(--ink-soft)", fontSize: 14, fontWeight: 600, marginBottom: 22 }}>
-            We&apos;ll pre-filter activities for the active child.
+            We&apos;ll line up activities for the child you&apos;re playing with.
           </p>
 
           {showAdd && (
@@ -611,7 +611,7 @@ export default function DashboardPage() {
           {children.length === 0 ? (
             <div className="text-center py-8" style={{ color: "var(--ink-faint)" }}>
               <div className="text-4xl mb-2">👶</div>
-              <p style={{ fontWeight: 700 }}>No children added yet.</p>
+              <p style={{ fontWeight: 700 }}>No little ones added yet.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
@@ -744,17 +744,17 @@ export default function DashboardPage() {
         <div style={cardStyle("var(--r3)", "-0.2deg")} className="mb-6">
           <h2 style={sectionHeading}>My library</h2>
           <p style={{ color: "var(--ink-soft)", fontSize: 14, fontWeight: 600, marginBottom: 22 }}>
-            Activities you&apos;ve built with the builder, plus curated activities you&apos;ve starred.
+            The ones you&apos;ve built yourself, plus any you&apos;ve starred.
           </p>
 
           {library.length === 0 ? (
             <div className="text-center py-10" style={{ color: "var(--ink-faint)" }}>
               <div className="text-5xl mb-3">🌱</div>
-              <p style={{ fontWeight: 700 }}>Your library is empty.</p>
+              <p style={{ fontWeight: 700 }}>Your library is looking sparse.</p>
               <p style={{ fontSize: 14, fontWeight: 600, marginTop: 6 }}>
-                Head to the{" "}
+                Pop over to the{" "}
                 <a href="/app" style={{ color: "var(--clay)", fontWeight: 800 }}>activity library</a>
-                {" "}and star activities you love, or use the builder to create your own.
+                {" "}and star the ones you love. Or build a new activity from scratch.
               </p>
             </div>
           ) : (

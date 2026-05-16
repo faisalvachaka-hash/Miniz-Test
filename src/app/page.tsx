@@ -3,25 +3,25 @@ export default function LandingPage() {
     {
       emoji: "🎯",
       title: "Hundreds of curated activities",
-      desc: "Every activity is designed around early-years development, with materials and step-by-step play.",
+      desc: "Every idea is built around what your child is learning right now. You get a list of bits you'll need and simple steps to follow.",
       accent: "var(--sage)",
     },
     {
       emoji: "🔬",
       title: "Filter by subject",
-      desc: "Sensory, science, water, sand, arts & crafts, outdoor — find the right kind of play.",
+      desc: "Sensory, science, water, sand, arts and crafts, outdoor play. Pick the kind of fun you're in the mood for.",
       accent: "var(--mustard)",
     },
     {
       emoji: "✨",
       title: "Build your own",
-      desc: "Type a play idea and we'll generate a full activity plan tailored to your child's age.",
+      desc: "Type a play idea and we'll turn it into a full activity, with steps, materials and timings to match your child's age.",
       accent: "var(--clay)",
     },
     {
       emoji: "💾",
       title: "Save what you love",
-      desc: "Star activities to your library, build your own, and find them again on any device.",
+      desc: "Star the ones you want to come back to. Your library follows you on any device.",
       accent: "var(--dusty-rose)",
     },
   ];
@@ -33,9 +33,9 @@ export default function LandingPage() {
   ];
 
   const steps = [
-    { num: "1", label: "Pick your child's age", desc: "From newborn to 5 years — every stage covered." },
-    { num: "2", label: "Browse or build an activity", desc: "Curated ideas, or create your own in seconds." },
-    { num: "3", label: "Play, learn and grow", desc: "Every activity ties back to a milestone." },
+    { num: "1", label: "Pick your child's age", desc: "From newborn through to five. Every stage is covered." },
+    { num: "2", label: "Browse or build an activity", desc: "Choose from our ideas, or whip up your own in seconds." },
+    { num: "3", label: "Play, learn and grow", desc: "Every activity ties back to a real milestone." },
   ];
 
   const developmentBadges = [
@@ -124,8 +124,8 @@ export default function LandingPage() {
           position: "relative",
           zIndex: 1,
         }}>
-          Expert-designed activities for little ones aged 0 to 5, grounded in early
-          childhood development — and completely free.
+          Hundreds of play ideas for babies, toddlers and preschoolers. Built by people who care
+          about early years. Free for families, always.
         </p>
 
         {/* CTAs */}
@@ -191,7 +191,7 @@ export default function LandingPage() {
           marginBottom: 56,
           letterSpacing: 0.3,
         }}>
-          Play-based learning in three steps
+          Play, learn, grow. In three quick steps.
         </h3>
 
         <div style={{
@@ -356,7 +356,7 @@ export default function LandingPage() {
           marginBottom: 12,
           letterSpacing: 0.3,
         }}>
-          Activities your child will love
+          Activities your little one will love
         </h3>
         <p style={{
           fontSize: 16,
@@ -364,7 +364,7 @@ export default function LandingPage() {
           color: "var(--ink-soft)",
           marginBottom: 48,
         }}>
-          Sign up to unlock the full library and build your own.
+          Sign up to see the full library and build your own.
         </p>
 
         <div style={{
@@ -430,7 +430,7 @@ export default function LandingPage() {
           marginBottom: 20,
           letterSpacing: 0.3,
         }}>
-          Every activity links to a<br />developmental milestone
+          Every activity has a<br />reason behind it
         </h3>
         <p style={{
           fontSize: 16,
@@ -440,7 +440,7 @@ export default function LandingPage() {
           margin: "0 auto 48px",
           lineHeight: 1.65,
         }}>
-          Mini Z and Me isn&apos;t just fun — every activity tells you how it connects to
+          Mini Z and Me isn&apos;t just about fun. Every activity tells you how it connects to
           your child&apos;s earlier development, so you always understand the <em>why</em>{" "}
           behind the play.
         </p>
@@ -511,7 +511,7 @@ export default function LandingPage() {
           color: "rgba(245, 232, 211, 0.9)",
           marginBottom: 40,
         }}>
-          Join Mini Z and Me — free for families, always.
+          Join Mini Z and Me. Free for families, always.
         </p>
         <a href="/signup" style={{
           background: "var(--cream)",
@@ -540,7 +540,7 @@ export default function LandingPage() {
         background: "var(--paper)",
         borderTop: "2px solid var(--paper-edge)",
       }}>
-        Made with love for curious little minds · Mini Z and Me © 2026
+        Made with love for curious little minds. Mini Z and Me © 2026
       </footer>
     </div>
   );

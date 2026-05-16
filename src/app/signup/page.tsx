@@ -36,15 +36,15 @@ export default function SignupPage() {
 
   if (success) {
     return (
-      <AuthLayout title="Check your email 📬" subtitle="Almost there — one more step">
+      <AuthLayout title="Check your email 📬" subtitle="Almost there. One more step.">
         <div className="text-center py-4">
           <div className="text-5xl mb-4">🎉</div>
           <p className="font-bold mb-2" style={{ color: "var(--ink)" }}>
-            We sent a confirmation link to:
+            We just sent a confirmation link to:
           </p>
           <p className="font-black text-lg mb-6" style={{ color: "var(--clay)" }}>{email}</p>
           <p className="text-sm mb-6" style={{ color: "var(--ink-soft)", fontWeight: 600, lineHeight: 1.6 }}>
-            Click the link in that email to activate your account, then come back to log in.
+            Click the link in that email to turn on your account, then pop back here to log in.
           </p>
           <Link href="/login" className="btn-primary inline-block text-center" style={{ textDecoration: "none" }}>
             Go to log in →
@@ -55,7 +55,7 @@ export default function SignupPage() {
   }
 
   return (
-    <AuthLayout title="Create your account" subtitle="Join Mini Z and Me — it's free">
+    <AuthLayout title="Create your account" subtitle="Join Mini Z and Me. It's free.">
       <form onSubmit={handleSignup} className="flex flex-col gap-4">
         <div>
           <label className="block text-sm font-black mb-1.5" style={{ color: "var(--ink)" }}>

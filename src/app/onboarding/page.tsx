@@ -75,7 +75,7 @@ export default function OnboardingPage() {
   return (
     <AuthLayout
       title="Tell us about your little one 👶"
-      subtitle="We'll use this to suggest age-perfect activities"
+      subtitle="So we can pick activities that suit them best"
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
@@ -103,7 +103,7 @@ export default function OnboardingPage() {
           >
             {AGES.map((a) => (
               <option key={a.age} value={a.age}>
-                {a.emoji} {a.label} — {a.sub}
+                {a.emoji} {a.label} · {a.sub}
               </option>
             ))}
           </select>
@@ -121,7 +121,7 @@ export default function OnboardingPage() {
         </button>
 
         <p className="text-center text-xs font-bold" style={{ color: "var(--ink-faint)" }}>
-          You can add more children any time from your dashboard.
+          You can add more little ones any time from your dashboard.
         </p>
       </form>
     </AuthLayout>

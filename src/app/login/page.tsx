@@ -40,7 +40,7 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Welcome back!" subtitle="Log in to your Mini Z and Me account">
+    <AuthLayout title="Welcome back!" subtitle="Pop in to your Mini Z and Me account">
       <form onSubmit={handleLogin} className="flex flex-col gap-4">
         <div>
           <label className="block text-sm font-black mb-1.5" style={{ color: "var(--ink)" }}>

@@ -69,7 +69,7 @@ export default function ResetPasswordPage() {
 
   if (error && !ready) {
     return (
-      <AuthLayout title="Link expired 😔" subtitle="This reset link is no longer valid">
+      <AuthLayout title="Link expired 😔" subtitle="That reset link isn't working anymore">
         <div className="text-center">
           <p className="mb-6" style={{ color: "var(--ink-soft)", fontSize: 15, fontWeight: 600 }}>
             {error}
