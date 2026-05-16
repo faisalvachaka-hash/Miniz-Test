@@ -49,8 +49,10 @@ Project 1 - Mini Z App/
 │   │   │   └── page.tsx        ← Request a password reset link (/forgot-password)
 │   │   ├── reset-password/
 │   │   │   └── page.tsx        ← Set a new password from the email link (/reset-password)
+│   │   ├── onboarding/
+│   │   │   └── page.tsx        ← First-time setup — add your first child (/onboarding)
 │   │   └── dashboard/
-│   │       └── page.tsx        ← The protected saved-activities page (/dashboard)
+│   │       └── page.tsx        ← Saved activities + child profile management (/dashboard)
 │   │
 │   ├── components/             ← Reusable building blocks used across pages
 │   │   ├── MinizApp.tsx        ← The main activity app (age tiles, cards, builder)
@@ -61,12 +63,13 @@ Project 1 - Mini Z App/
 │       ├── supabase.ts         ← Creates the connection to Supabase (used by all auth pages)
 │       └── data.ts             ← Type definitions, age groups, keywords, and the activity generator function
 │
-├── supabase/                   ← SQL files to seed the activities database
-│   ├── seed.sql                ← Original 13 curated activities + table CREATE + RLS policies
+├── supabase/                   ← SQL files that set up the database
+│   ├── seed.sql                ← Activities table CREATE + RLS + original 13 curated activities
 │   ├── seed_water_play.sql     ← 120 Water Play activities (ages 0–5, 20 per age)
 │   ├── seed_sand_play.sql      ← 120 Sand Play activities (ages 0–5, 20 per age)
 │   ├── seed_arts_crafts.sql    ← 120 Arts & Crafts activities (ages 0–5, 20 per age)
-│   └── seed_nature.sql         ← 120 Outdoor / Nature activities (ages 0–5, 20 per age)
+│   ├── seed_nature.sql         ← 120 Outdoor / Nature activities (ages 0–5, 20 per age)
+│   └── children_table.sql      ← Children table CREATE + RLS for child profiles
 │
 ├── prototype/
 │   └── index.html              ← The original single-file HTML prototype (kept for reference)
@@ -76,7 +79,7 @@ Project 1 - Mini Z App/
 │
 ├── public/                     ← Static files (images, icons) that are served directly
 │
-├── .env.local                  ← Secret environment variables (NOT on GitHub — see section 6)
+├── .env.local                  ← Secret environment variables (NOT on GitHub — see section 8)
 ├── .gitignore                  ← Tells Git which files to never upload to GitHub
 ├── package.json                ← Lists all the packages (tools) this project depends on
 ├── tsconfig.json               ← TypeScript configuration
@@ -94,7 +97,9 @@ The homepage is now a **public marketing landing page** — the front door of th
 
 ### Activity Browser — `/app`
 
-The activity browser is what used to live on the homepage. It is now a **protected page** — only logged-in users can see it. When the page loads, it first checks with Supabase whether there is a logged-in user; if not, it redirects to `/login`. Once inside, the user sees six colourful age tiles across the top (0 years through to 5 years). Clicking a tile filters the activity cards below. Each activity card shows the activity name, age range, focus area (e.g. "Sensory · Fine motor"), and how long it takes. Clicking a card opens a pop-up modal with full details: a materials list, step-by-step instructions, expected duration, and a section explaining how the activity links to an earlier stage of development. At the bottom of the page there is a "Build your own activity" tool — the parent types in a play idea (e.g. "water sensory play for my 2 year old"), picks the age, and the app generates a full activity plan. The header has been updated to show **My Library** (goes to `/dashboard`) and **Log Out** (signs out and returns to the landing page), instead of the old Log In / Sign Up buttons.
+The activity browser is what used to live on the homepage. It is now a **protected page** — only logged-in users can see it. When the page loads, it first checks with Supabase whether there is a logged-in user; if not, it redirects to `/login`. It then loads the user's **child profiles** — if the user has no children yet, it sends them to `/onboarding` to add one. Once inside, a row of **child chips** appears at the top ("Showing for: 👶 Zara · 3"), with an active child highlighted. The matching age tile is pre-selected and the builder dropdown is pre-set to that child's age, but every age tile remains visible and clickable so a parent can switch any time. Clicking another child chip changes the active filter instantly; a dashed **+ Add child** chip links to the dashboard. The header still shows **My Library** (goes to `/dashboard`) and **Log Out**.
+
+Below the chip row, the experience is unchanged: six colourful age tiles, subject filter chips, the activity card grid, modals with full activity details, and the "Build your own activity" tool at the bottom.
 
 ### Signup Page — `/signup`
 
@@ -102,7 +107,7 @@ The signup page is where a new user creates their account. It shows a simple for
 
 ### Login Page — `/login`
 
-The login page is where existing users sign in. It has the same clean card design as signup. The user enters their email and password and clicks **Log In**. If the details are correct, Supabase confirms the session and the app automatically takes the user to `/app` (the activity browser). If the details are wrong, an error message appears below the form. There are two links at the bottom: one to the signup page for new users, and a **Forgot password?** link to start the password reset flow.
+The login page is where existing users sign in. It has the same clean card design as signup. The user enters their email and password and clicks **Log In**. If the details are correct, Supabase confirms the session and the app checks whether the user has any child profiles set up: if they already have at least one child, they go straight to `/app` (the activity browser); if not, they're sent to `/onboarding` to add their first child. If the login details are wrong, an error message appears below the form. There are two links at the bottom: one to the signup page for new users, and a **Forgot password?** link to start the password reset flow.
 
 ### Forgot Password — `/forgot-password`
 
@@ -110,11 +115,21 @@ This page is where a user can request a password reset link if they have forgott
 
 ### Reset Password — `/reset-password`
 
-When the user clicks the email link, they land on `/reset-password`. The page reads a special `code` from the URL and exchanges it with Supabase for a temporary session that lets the user update their password. The user then enters their new password twice and submits. If successful, the user is automatically logged in and taken to `/app`. If the link has expired or is invalid, an error screen appears with a button to request a new link.
+When the user clicks the email link, they land on `/reset-password`. The page reads a special `code` from the URL and exchanges it with Supabase for a temporary session that lets the user update their password. The user then enters their new password twice and submits. If successful, the user is automatically logged in and routed to `/app` (or to `/onboarding` if they don't yet have a child profile). If the link has expired or is invalid, an error screen appears with a button to request a new link.
+
+### Onboarding — `/onboarding`
+
+The onboarding page is a one-time setup screen for new users. It appears the first time a user logs in (or signs up) before they reach the activity browser, so the very first thing the app knows about them is who their child is. The form asks for the **child's name** and **age** (0–5, picked from a friendly dropdown). When submitted, the profile is saved to Supabase's `children` table. The user is then taken straight to `/app` with the child already active. If a logged-in user visits `/onboarding` after already having children, the page silently redirects to `/app` — there is no way to get stuck here. More children can be added later from the dashboard.
 
 ### Dashboard — `/dashboard`
 
-The dashboard is a protected page — only logged-in users can see it. When the page loads, it checks for a logged-in user; if none, it redirects to `/login`. If there is a session, the page loads and shows a welcome message with the user's email address, along with quick links back to the activity library. There is a **Log Out** button in the top-right corner — clicking it tells Supabase to end the session and sends the user back to the login page.
+The dashboard is a protected page — only logged-in users can see it. When the page loads, it checks for a logged-in user; if none, it redirects to `/login`. The page is now organised into three cards:
+
+1. **Welcome card** — greets the user and shows their email address
+2. **My children card** — lists every child profile (avatar + name + age stage). Each row has an **Edit age** button (inline dropdown) and a **Remove** button (with confirmation). At the top of the card, a **+ Add child** button reveals a small form for name and age. Brand-new users will see an empty state here if they delete all their children
+3. **Saved activities card** — lists every activity the user has created with the builder, with the same card design used elsewhere
+
+There is a **Log Out** button in the top-right and quick links at the bottom that jump back to the activity library or the landing page.
 
 ---
 
@@ -182,7 +197,49 @@ In total there are around **493 curated activities** across six subjects (Scienc
 
 ---
 
-## 7. Environment Variables
+## 7. Personalisation: Child Profiles
+
+A parent can save one or more child profiles to their account. The app uses this to pre-filter activities for the right age, so the parent doesn't have to re-pick the age tile every time they open the app.
+
+**The `children` table**
+
+Child profiles live in a Supabase table called `children`. Each row stores:
+
+| Column | What it is |
+|---|---|
+| `id` | A unique identifier (UUID), generated automatically |
+| `user_id` | Who the child belongs to. Links to the parent's account in `auth.users`. If the parent deletes their account, their children's profiles are deleted too |
+| `name` | The child's first name |
+| `age` | A whole number from 0 to 5 |
+| `created_at` | When the profile was added |
+
+Row-Level Security (RLS) policies on this table mean a user can only ever read, insert, update or delete **their own** children — never anyone else's.
+
+**The first-run experience**
+
+When a brand-new user logs in for the first time, the login page checks if they have any children:
+- **Yes** → straight to `/app`
+- **No** → off to `/onboarding` to add their first child
+
+`/onboarding` is a single-screen form (name + age dropdown). Once submitted, the child is saved to Supabase and the user is sent into the activity browser. If a user with no children somehow visits `/app` directly, the same redirect happens there too — there's no way to use the activity browser without at least one child profile.
+
+**The active child**
+
+The activity browser remembers which child is "active" (the one being filtered for). The active child's id is saved to `localStorage` in the browser under the key `miniz_active_child_id`, so it persists across page reloads. When the user switches child by clicking a chip, the localStorage value updates instantly.
+
+If the localStorage value is missing (first visit) or points to a child that's been deleted, the app falls back to the first child in the user's list.
+
+**What pre-filtering means in practice**
+
+When `/app` opens:
+- The age tile matching the active child's age is **pre-selected** (the card grid below is already filtered)
+- The "Build your own" age dropdown is **pre-set** to the active child's age
+
+All six age tiles stay visible and clickable — pre-filtering is a smart default, never a lock. The parent can browse activities for any age at any time, then click their child's chip again to return to the personalised view.
+
+---
+
+## 8. Environment Variables
 
 Environment variables are settings that are kept secret and stored locally on your machine — they are **never uploaded to GitHub**. This project uses a file called `.env.local` (in the root of the project) to store them.
 
@@ -197,7 +254,7 @@ The `.gitignore` file contains the rule `.env*` which ensures this file is alway
 
 ---
 
-## 8. How to Run the App Locally
+## 9. How to Run the App Locally
 
 Follow these steps to run the project on your own computer:
 
@@ -235,7 +292,7 @@ To stop the server, press `Ctrl + C` in the terminal.
 
 ---
 
-## 9. How to Save Changes to GitHub
+## 10. How to Save Changes to GitHub
 
 Every time you finish a piece of work, save it to GitHub with these three commands:
 
@@ -251,17 +308,17 @@ git push
 
 ---
 
-## 10. What Still Needs to Be Built
+## 11. What Still Needs to Be Built
 
 These features are planned but not yet built:
 
 | Feature | Description |
 |---|---|
-| **Child profiles** | Let parents add their child's name and age so the app can personalise the experience |
 | **Activity images** | Add illustrations or photos to each activity card to make it more visually engaging |
 | **Deployment** | Deploy the app to Vercel (free) so it has a real public web address anyone can visit |
 | **Email verification on signup** | Currently the signup flow shows a "check your inbox" screen, but verification could be polished — e.g. resending the link, custom email design |
 | **Activity favourites** | Let users heart/star curated activities as well as save custom ones |
+| **"Today's activity" surface** | A single daily suggestion on the dashboard, picked based on the active child's age |
 
 ✅ **Recently completed (May 2026):**
 - Public marketing landing page at `/`
@@ -270,10 +327,11 @@ These features are planned but not yet built:
 - 480 new curated activities across four new subject seeds (Water Play, Sand Play, expanded Arts & Crafts, expanded Outdoor)
 - Saving custom activities to Supabase (per-user with RLS)
 - Personal activity library on `/dashboard`
+- **Child profiles** — onboarding screen, active-child chip switcher, pre-filtered age, dashboard management
 
 ---
 
-## 11. End of Session Checklist
+## 12. End of Session Checklist
 
 Run through these three steps at the end of every coding session to keep your work saved, your learning recorded, and your documentation up to date.
 
@@ -294,4 +352,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026*
+*Last updated: 16 May 2026 — added child profiles / personalised experience*
