@@ -45,6 +45,10 @@ Small bites that punch above their weight. Pick freely.
 |---|---|
 | **"Today's activity" surface** | A single daily suggestion on the dashboard, picked from the active child's age, with a "we did this!" button. Single biggest engagement lever — turns the app from a one-time visit into a daily habit |
 | **Activity notes / journal** | After a parent does an activity, let them jot a quick note ("Zara loved the foil bit, hated the wet sponge"). Builds a private journal per child. Strong emotional payoff |
+| **Themed / seasonal activity collections** | Curated bundles tied to a time of year or celebration — Christmas, Eid, Diwali, Hanukkah, summer, winter, Halloween. Filter chip + landing tiles that surface the right activities at the right time |
+| **Worksheets & printable resources per activity** | For each activity, attach optional supporting materials — keyword cards, colouring sheets, image prompts, vocabulary lists — that parents can print or view |
+| **Book recommendations per activity** | Suggest 2–3 picture books that pair thematically with each activity ("Water Sensory Play" → *Splash!*, *The Rainbow Fish*). Adds depth and gives parents a follow-on |
+| **Day-out suggestions linked to activities** | Real-world tie-ins — visit a local farm to extend a barnyard sensory tray, a museum for a fossil-making activity, a park for a nature treasure hunt. Could start as hand-curated text, later become location-aware |
 | **Search across activities** | Search bar in `/app` that filters by title or material. Useful as the library grows past 500 activities |
 | **Email verification polish** | Resend confirmation link, custom-branded confirmation email |
 | **Recently viewed** | A small "Recently viewed" strip on `/app` using localStorage |
@@ -58,7 +62,8 @@ Real lift but high-impact. Plan carefully before starting.
 | Idea | Why it matters |
 |---|---|
 | **Deploy to Vercel** | Get the app on a real public URL so others can use it. Currently postponed by user preference |
-| **Activity images / illustrations** | Replace the emoji icons with small custom illustrations on each card. Big visual upgrade, but slow because each of ~493 activities needs an image |
+| **Real-life imagery throughout** | Replace emoji icons on the age tiles and activity cards with real photos / illustrations of children, materials and toys. Warm, tactile, authentic — matches the Montessori-toy aesthetic better than emoji ever can. Big content effort but high payoff |
+| **Activity setup photos** | For each activity, add 1–3 photos showing how it's actually set up (the tray ready to go, the materials laid out, the child mid-play). Hugely useful for parents who are visual learners and want to know what "good" looks like before they start |
 | **"You might also like…" suggestions** | After viewing or starring activities, suggest related ones based on subject + age + what other parents enjoyed |
 | **Child progress timeline** | Visualise per-child what's been done, with photos and notes. Long-form keepsake |
 | **Multi-language support** | Translate UI and (eventually) activity content. Big undertaking |
@@ -82,4 +87,4 @@ Ideas captured but not yet evaluated. Move up the list when a real reason appear
 
 ---
 
-*Last updated: 16 May 2026*
+*Last updated: 16 May 2026 — added themed/seasonal, worksheets, book recs, day-outs, real-life imagery, setup photos*
