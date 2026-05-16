@@ -11,6 +11,7 @@ Most recent first. Each entry is a feature that's live in the app.
 
 | Date | Feature | Notes |
 |---|---|---|
+| 16 May 2026 | **Personalised dashboard greeting** | "Welcome back, [email]" replaced with "Playing with Zara today?" using the active child's name. Handles 0, 1, 2 and 3+ children with Oxford-style joining |
 | 16 May 2026 | **Montessori-toy redesign** | Warm terracotta + cream palette, handwritten Caveat headings, paper-feel cards with imperfect corners, chunky "wooden block" buttons, brand logo image. See `documentation.md` §8 for the full design system |
 | 16 May 2026 | **Save curated activities to library** | Star button on every curated card, unified library view on `/dashboard` with `×` remove buttons. New `saved_activities` join table with RLS |
 | 16 May 2026 | **Child profiles** | Onboarding screen for first-time users, active-child chip switcher on `/app`, pre-filtered age, add/edit/delete children from dashboard. New `children` table with RLS |
@@ -29,7 +30,6 @@ Small bites that punch above their weight. Pick freely.
 
 | Idea | Effort | Why |
 |---|---|---|
-| **Personalised dashboard greeting** | ~10 min | Replace "Welcome back, [email]" with "Playing with Zara today?" using the active child's name. Makes the app feel personal |
 | **"Surprise me!" button** | ~15 min | A button on `/app` that picks a random activity for the active child's age and opens the modal. Pure delight |
 | **Subject chip counts** | ~10 min | Show "(120)" after each subject filter chip so parents see how big each category is |
 | **Edit child's name** | ~15 min | Extend the existing inline edit-age pattern on `/dashboard` to also edit the name |
@@ -87,4 +87,4 @@ Ideas captured but not yet evaluated. Move up the list when a real reason appear
 
 ---
 
-*Last updated: 16 May 2026 — added themed/seasonal, worksheets, book recs, day-outs, real-life imagery, setup photos*
+*Last updated: 16 May 2026 — shipped personalised dashboard greeting*

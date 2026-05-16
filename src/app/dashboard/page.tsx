@@ -188,10 +188,10 @@ export default function DashboardPage() {
             margin: 0,
             lineHeight: 1,
           }}>
-            Welcome back!
+            {buildGreeting(children)}
           </h1>
-          <p style={{ fontSize: 17, fontWeight: 700, color: "var(--clay)", marginTop: 8 }}>
-            {user?.email}
+          <p style={{ fontSize: 14, fontWeight: 700, color: "var(--ink-soft)", marginTop: 10 }}>
+            Signed in as <span style={{ color: "var(--clay)" }}>{user?.email}</span>
           </p>
         </div>
 
@@ -482,6 +482,16 @@ function cardStyle(radius: string, rotate: string): React.CSSProperties {
     boxShadow: "var(--shadow-paper)",
     transform: `rotate(${rotate})`,
   };
+}
+
+function buildGreeting(children: Child[]): string {
+  if (children.length === 0) return "Welcome back!";
+  const names = children.map((c) => c.name);
+  if (names.length === 1) return `Playing with ${names[0]} today?`;
+  if (names.length === 2) return `Playing with ${names[0]} & ${names[1]} today?`;
+  const last = names[names.length - 1];
+  const rest = names.slice(0, -1).join(", ");
+  return `Playing with ${rest} & ${last} today?`;
 }
 
 const sectionHeading: React.CSSProperties = {
