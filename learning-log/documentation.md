@@ -69,7 +69,8 @@ Project 1 - Mini Z App/
 │   ├── seed_sand_play.sql      ← 120 Sand Play activities (ages 0–5, 20 per age)
 │   ├── seed_arts_crafts.sql    ← 120 Arts & Crafts activities (ages 0–5, 20 per age)
 │   ├── seed_nature.sql         ← 120 Outdoor / Nature activities (ages 0–5, 20 per age)
-│   └── children_table.sql      ← Children table CREATE + RLS for child profiles
+│   ├── children_table.sql      ← Children table CREATE + RLS for child profiles
+│   └── saved_activities_table.sql ← Join table tracking which curated activities each user has saved
 │
 ├── prototype/
 │   └── index.html              ← The original single-file HTML prototype (kept for reference)
@@ -101,6 +102,8 @@ The activity browser is what used to live on the homepage. It is now a **protect
 
 Below the chip row, the experience is unchanged: six colourful age tiles, subject filter chips, the activity card grid, modals with full activity details, and the "Build your own activity" tool at the bottom.
 
+**Saving curated activities** — every curated activity card has a small star button in the top-right corner. An outlined star (☆) means the activity isn't in your library yet; a filled star (★) means it is. Clicking the star toggles the saved state instantly (no page reload) and adds a "★ saved" chip to the card. The activity then shows up in your library on the dashboard. Custom activities you built yourself don't show a star — they're always in your library by definition.
+
 ### Signup Page — `/signup`
 
 The signup page is where a new user creates their account. It shows a simple form with an email address field and a password field (minimum 6 characters). When the user clicks **Sign Up**, the app sends their details to Supabase which creates the account and sends a confirmation email. Once submitted, the page switches to a success screen telling the user to check their inbox and click the link to verify their email address. There is also a link at the bottom for users who already have an account to go straight to login instead.
@@ -127,7 +130,7 @@ The dashboard is a protected page — only logged-in users can see it. When the 
 
 1. **Welcome card** — greets the user and shows their email address
 2. **My children card** — lists every child profile (avatar + name + age stage). Each row has an **Edit age** button (inline dropdown) and a **Remove** button (with confirmation). At the top of the card, a **+ Add child** button reveals a small form for name and age. Brand-new users will see an empty state here if they delete all their children
-3. **Saved activities card** — lists every activity the user has created with the builder, with the same card design used elsewhere
+3. **My library card** — a single merged list of everything in the user's library: activities they've built with the builder (tagged "✨ custom") plus curated activities they've starred (tagged "★ saved"). Every card has an `×` button in the top-right. For a starred curated activity, the `×` simply unsaves it (the activity itself stays in the public library on `/app`). For a custom activity, the `×` asks for confirmation and then permanently deletes it. If the library is empty, an encouraging empty state points the user back to `/app`
 
 There is a **Log Out** button in the top-right and quick links at the bottom that jump back to the activity library or the landing page.
 
@@ -194,6 +197,22 @@ The library is built up by running SQL "seed" files in the Supabase SQL Editor. 
 In total there are around **493 curated activities** across six subjects (Science, Maths, Writing, Sensory Play, Arts & Crafts, Outdoor, Water Play, Sand Play).
 
 **Subject chips and emojis** — the activity browser auto-discovers which subjects exist in the database and shows them as filter chips at the top. A small lookup table in `MinizApp.tsx` called `SUBJECT_EMOJIS` maps each subject name to the emoji that appears on its chip. New subjects appear automatically — if no emoji is mapped, a default 📚 is used.
+
+**The `saved_activities` join table**
+
+When a user "stars" a curated activity, we don't copy the activity — we just record that this user saved that activity. This lives in a separate table called `saved_activities`:
+
+| Column | What it is |
+|---|---|
+| `user_id` | Who saved it. Links to `auth.users` |
+| `activity_id` | What they saved. Links to `activities` |
+| `created_at` | When they saved it |
+
+The primary key is the combination of `(user_id, activity_id)` — meaning a user can save any activity at most once. If the user is deleted, all their saves go with them. If a curated activity is ever deleted, the save records disappear cleanly too.
+
+Row-Level Security on this table means users can only read, insert and delete their own saves — never anyone else's. There's no UPDATE policy because there's nothing to update; you either have a save or you don't.
+
+When the dashboard loads the user's library, it pulls custom activities and saved curated activities in parallel (`Promise.all`), tags each one with its source, and merges them into a single list for display.
 
 ---
 
@@ -328,6 +347,7 @@ These features are planned but not yet built:
 - Saving custom activities to Supabase (per-user with RLS)
 - Personal activity library on `/dashboard`
 - **Child profiles** — onboarding screen, active-child chip switcher, pre-filtered age, dashboard management
+- **Save curated activities to library** — star button on each card, unified library view on the dashboard, remove/delete controls
 
 ---
 
@@ -352,4 +372,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — added child profiles / personalised experience*
+*Last updated: 16 May 2026 — added save-to-library and remove-from-library*
