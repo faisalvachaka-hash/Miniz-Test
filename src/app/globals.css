@@ -339,31 +339,31 @@ body::before {
   letter-spacing: 0.3px;
 }
 
-/* Activity cards — die-cut stickers on the page */
+/* Activity cards — paper card with a coloured top edge & subtle accent ring */
 .activity-card {
   background: var(--paper);
   border-radius: var(--r1);
   padding: 22px 20px;
   cursor: pointer;
-  /* Thick sticker outline + coloured "shadow" giving a layered die-cut feel */
-  border: 4px solid var(--accent, var(--sage));
+  border: 2px solid var(--paper-edge);
+  border-top: 8px solid var(--accent, var(--sage));
   box-shadow:
-    0 5px 0 var(--accent, var(--sage)),
-    0 14px 26px -8px rgba(74, 52, 36, 0.22);
+    0 4px 0 rgba(74, 52, 36, 0.1),
+    0 12px 24px -8px rgba(74, 52, 36, 0.18);
   transition: transform 0.18s, box-shadow 0.18s;
   position: relative;
 }
 .activity-card:hover {
-  transform: translateY(-4px) rotate(-0.8deg);
+  transform: translateY(-4px) rotate(-0.6deg);
   box-shadow:
-    0 8px 0 var(--accent, var(--sage)),
-    0 20px 36px -8px rgba(74, 52, 36, 0.28);
+    0 6px 0 rgba(74, 52, 36, 0.12),
+    0 18px 32px -8px rgba(74, 52, 36, 0.22);
 }
 .activity-card:active {
   transform: translateY(2px);
   box-shadow:
-    0 2px 0 var(--accent, var(--sage)),
-    0 6px 14px -4px rgba(74, 52, 36, 0.18);
+    0 2px 0 rgba(74, 52, 36, 0.1),
+    0 6px 14px -4px rgba(74, 52, 36, 0.16);
 }
 .activity-icon {
   width: 68px;
