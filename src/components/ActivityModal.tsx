@@ -9,12 +9,20 @@ const ACTIVE_CHILD_KEY = "miniz_active_child_id";
 export function ActivityModal({
   activity,
   onClose,
+  onSaveChange,
 }: {
   activity: Activity;
   onClose: () => void;
+  /** Called whenever the user toggles "save to library" inside the modal */
+  onSaveChange?: (isSaved: boolean) => void;
 }) {
   const ageLabel = AGES.find((a) => a.age === activity.age)?.label ?? "";
   const [done, setDone] = useState<Set<number>>(new Set());
+
+  // Save-to-library state (curated activities only — custom ones are always in library)
+  const [isSaved, setIsSaved] = useState<boolean | null>(null);
+  const [savingFlip, setSavingFlip] = useState(false);
+  const showSaveButton = !activity.isCustom;
 
   // Notes state
   const [activeChild, setActiveChild] = useState<Child | null>(null);
@@ -30,6 +38,55 @@ export function ActivityModal({
       else next.add(i);
       return next;
     });
+  }
+
+  // Load whether this activity is already in the user's library
+  useEffect(() => {
+    if (!showSaveButton) return;
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        setIsSaved(false);
+        return;
+      }
+      const { data } = await supabase
+        .from("saved_activities")
+        .select("activity_id")
+        .eq("user_id", userData.user.id)
+        .eq("activity_id", activity.id)
+        .maybeSingle();
+      setIsSaved(!!data);
+    })();
+  }, [activity.id, showSaveButton]);
+
+  async function handleToggleSave() {
+    if (!showSaveButton || savingFlip || isSaved === null) return;
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) return;
+    setSavingFlip(true);
+
+    const wasSaved = isSaved;
+    // Optimistic
+    setIsSaved(!wasSaved);
+    onSaveChange?.(!wasSaved);
+
+    const { error } = wasSaved
+      ? await supabase
+          .from("saved_activities")
+          .delete()
+          .eq("user_id", userData.user.id)
+          .eq("activity_id", activity.id)
+      : await supabase
+          .from("saved_activities")
+          .insert({ user_id: userData.user.id, activity_id: activity.id });
+
+    if (error) {
+      // Rollback on failure
+      setIsSaved(wasSaved);
+      onSaveChange?.(wasSaved);
+      console.error("Failed to toggle save:", error.message);
+    }
+    setSavingFlip(false);
   }
 
   // Load active child + notes for (this activity, this child)
@@ -139,10 +196,59 @@ export function ActivityModal({
           <button className="modal-close" onClick={onClose} aria-label="Close">
             ×
           </button>
+          {showSaveButton && (
+            <button
+              onClick={handleToggleSave}
+              disabled={isSaved === null || savingFlip}
+              aria-label={isSaved ? "Remove from library" : "Save to library"}
+              title={isSaved ? "Remove from library" : "Save to library"}
+              style={{
+                position: "absolute",
+                top: 18,
+                left: 18,
+                background: isSaved ? "var(--mustard)" : "var(--paper)",
+                border: "2px solid var(--paper-edge)",
+                width: 40,
+                height: 40,
+                borderRadius: "50% 45% 50% 50% / 50% 50% 45% 50%",
+                fontSize: 20,
+                cursor: isSaved === null ? "wait" : "pointer",
+                fontWeight: 900,
+                color: isSaved ? "var(--cream)" : "var(--ink-faint)",
+                boxShadow: "0 3px 0 var(--paper-edge)",
+                transition: "transform 0.12s, background 0.15s, color 0.15s",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                lineHeight: 1,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-1px) rotate(-4deg)")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0) rotate(0deg)")}
+            >
+              {isSaved ? "★" : "☆"}
+            </button>
+          )}
           <div className="modal-emoji">{activity.emoji}</div>
           <h2 style={{ color: "var(--cream)" }}>{activity.title}</h2>
           <div className="modal-sub" style={{ color: "rgba(245, 232, 211, 0.85)" }}>
             {ageLabel} · {activity.area}
+            {isSaved && (
+              <span style={{
+                marginLeft: 10,
+                background: "var(--mustard)",
+                color: "var(--cream)",
+                padding: "3px 10px",
+                borderRadius: "var(--r-pill)",
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: 0.3,
+                border: "2px solid var(--mustard-dark)",
+                display: "inline-block",
+                verticalAlign: "middle",
+              }}>
+                ★ in your library
+              </span>
+            )}
           </div>
         </div>
         <div className="modal-body">

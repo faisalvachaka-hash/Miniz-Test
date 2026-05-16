@@ -127,6 +127,8 @@ A few quality-of-life touches:
 
 **Saving curated activities** — every curated activity card has a small star button in the top-right corner. An outlined star (☆) means the activity isn't in your library yet; a filled star (★) means it is. Clicking the star toggles the saved state instantly (no page reload) and adds a "★ saved" chip to the card. The activity then shows up in your library on the dashboard. Custom activities you built yourself don't show a star — they're always in your library by definition.
 
+The same save toggle also lives **inside the activity modal**, mirroring the close button at the top-left of the header (mustard ★ when saved, paper ☆ when not). A small "★ in your library" chip appears in the modal subtitle when the activity is in the user's library. The two save buttons stay in sync — toggling either one updates the card chip on `/app` and the library list on `/dashboard` immediately.
+
 ### Signup Page — `/signup`
 
 The signup page is where a new user creates their account. It shows a simple form with an email address field and a password field (minimum 6 characters). When the user clicks **Sign Up**, the app sends their details to Supabase which creates the account and sends a confirmation email. Once submitted, the page switches to a success screen telling the user to check their inbox and click the link to verify their email address. There is also a link at the bottom for users who already have an account to go straight to login instead.
@@ -440,6 +442,7 @@ These features are planned but not yet built:
 - **Age-matched activity colours** — every activity adopts its age tile's colour, so a filtered library reads as a cohesive set
 - **Age-gated activity grid** — the activity grid only appears once a parent has selected an age (intentional browsing, calmer first paint)
 - **Activity notes / journal** — private memory journal per `(child, activity)` inside the activity modal. Notes are saved to a new `activity_notes` Supabase table with RLS
+- **Save toggle inside the activity modal** — mirrors the card-level star button, syncs with the rest of the UI
 
 ---
 
@@ -464,4 +467,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — shipped activity notes / journal*
+*Last updated: 16 May 2026 — save toggle now lives inside the activity modal too*

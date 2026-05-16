@@ -847,6 +847,22 @@ export default function DashboardPage() {
         <ActivityModal
           activity={selectedActivity}
           onClose={() => setSelectedActivity(null)}
+          onSaveChange={(saved) => {
+            if (!selectedActivity) return;
+            const id = String(selectedActivity.id);
+            if (saved) {
+              // Saved a curated activity that wasn't in the library yet — add it
+              if (!library.some((e) => String(e.activity.id) === id)) {
+                setLibrary((prev) => [
+                  { activity: selectedActivity, source: "saved" },
+                  ...prev,
+                ]);
+              }
+            } else {
+              // Unsaved — remove from library (unless it's a custom activity, which uses the × button)
+              setLibrary((prev) => prev.filter((e) => String(e.activity.id) !== id));
+            }
+          }}
         />
       )}
     </div>

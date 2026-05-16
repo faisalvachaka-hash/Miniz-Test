@@ -11,6 +11,7 @@ Most recent first. Each entry is a feature that's live in the app.
 
 | Date | Feature | Notes |
 |---|---|---|
+| 16 May 2026 | **Save toggle inside the activity modal** | A second save button now lives in the modal header (top-left, mirroring close). Outline star ☆ when unsaved, mustard ★ when saved, plus an "in your library" chip in the subtitle. Custom activities don't show it. State syncs both ways: toggling in the modal updates the card chip on `/app` and the library list on `/dashboard` |
 | 16 May 2026 | **Activity notes / journal** | Private memory book per (child, activity). New "📓 How it went" section inside the activity modal lets a parent jot notes — "Zara loved squishing the foam, hated the wet sponge" — and they're saved to a new `activity_notes` table with RLS. Notes for the active child only. Add via textarea + button; delete via `×` on each card. Newest first |
 | 16 May 2026 | **Hide activities until age picked** | `/app` no longer shows the activity grid by default. A friendly dashed-border "☝️ Pick an age to begin" panel fills the space until a parent taps an age block or a child chip |
 | 16 May 2026 | **Activity cards match their age tile colour** | Every activity's accent colour now comes from its age tile (dusty rose / mustard / clay / sage / dusty blue / olive) instead of the per-subject DB colour — unified palette across the library |
@@ -85,4 +86,4 @@ Ideas captured but not yet evaluated. Move up the list when a real reason appear
 
 ---
 
-*Last updated: 16 May 2026 — shipped activity notes / journal*
+*Last updated: 16 May 2026 — added save toggle inside the activity modal*

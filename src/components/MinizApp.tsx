@@ -660,6 +660,15 @@ export default function MinizApp() {
         <ActivityModal
           activity={selectedActivity}
           onClose={() => setSelectedId(null)}
+          onSaveChange={(saved) => {
+            const id = String(selectedActivity.id);
+            setSavedIds((prev) => {
+              const next = new Set(prev);
+              if (saved) next.add(id);
+              else next.delete(id);
+              return next;
+            });
+          }}
         />
       )}
     </>
