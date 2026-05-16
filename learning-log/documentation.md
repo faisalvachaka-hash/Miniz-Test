@@ -76,7 +76,8 @@ Project 1 - Mini Z App/
 │   └── index.html              ← The original single-file HTML prototype (kept for reference)
 │
 ├── learning-log/
-│   └── documentation.md        ← This file — the living documentation for the project
+│   ├── documentation.md        ← This file — the living documentation for the project
+│   └── roadmap.md              ← Running list of what's been built + the feature backlog
 │
 ├── public/                     ← Static files (images, icons) that are served directly
 │   └── logo.png                ← The Mini Z and Me brand mark (used by the logo on every page)
