@@ -61,6 +61,39 @@ export function colorForAge(age: AgeKey): string {
   return AGES.find((a) => a.age === age)?.color ?? "#8ba888";
 }
 
+export type Milestone = {
+  label: string;
+  emoji: string;
+  color: string;
+};
+
+/**
+ * The 6 developmental milestones every activity links back to.
+ * Single source of truth — landing page and activity modal both read from here.
+ */
+export const MILESTONES: Milestone[] = [
+  { emoji: "🧠",  label: "Cognitive growth",         color: "var(--clay)" },
+  { emoji: "🤝",  label: "Social skills",            color: "var(--sage)" },
+  { emoji: "✋",  label: "Fine motor",               color: "var(--mustard)" },
+  { emoji: "🗣️", label: "Language",                 color: "var(--dusty-rose)" },
+  { emoji: "🎨",  label: "Creativity & imagination", color: "var(--dusty-blue)" },
+  { emoji: "🌍",  label: "Understanding the world",  color: "var(--olive)" },
+];
+
+/**
+ * Map an activity's `area` string to one developmental milestone.
+ * Priority-ordered: first match wins. Defaults to Cognitive growth.
+ */
+export function milestoneFor(area: string): Milestone {
+  const a = area.toLowerCase();
+  if (a.includes("fine motor")) return MILESTONES[2];
+  if (a.includes("literacy") || a.includes("vocabulary") || a.includes("phonics") || a.includes("language") || a.includes("story")) return MILESTONES[3];
+  if (a.includes("creative") || a.includes("creativity") || a.includes("music") || a.includes("art") || a.includes("imagination") || a.includes("imaginative")) return MILESTONES[4];
+  if (a.includes("outdoor") || a.includes("nature")) return MILESTONES[5];
+  if (a.includes("social")) return MILESTONES[1];
+  return MILESTONES[0];
+}
+
 export function mapActivityFromDB(row: Record<string, unknown>): Activity {
   const age = row.age as AgeKey;
   return {

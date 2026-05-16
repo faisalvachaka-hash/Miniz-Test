@@ -448,6 +448,7 @@ These features are planned but not yet built:
 - **Two new developmental-milestone cards on the landing page** — added 🎨 Creativity & imagination (dusty-blue) and 🌍 Understanding the world (olive) to the "Built on research" badge grid. The grid now shows 6 cards, all colour-coded against the palette already used for age tiles. The new milestones round out the EYFS-aligned set, complementing the existing four (Cognitive, Social, Fine motor, Language)
 - **Humanised all copy across the app** — full sweep of every user-facing string: landing page, login/signup/forgot/reset, onboarding, /app, /dashboard, the activity modal, the 404 page, the small fallback activities in `data.ts`, and all five SQL seed files (seed.sql plus the four subject seeds). Removed every em dash from prose, swapped formal phrases for plain English, varied sentence length and warmed up the voice so it reads like a real parent wrote it. The 490 SQL-seeded activities were rewritten too; you'll need to re-run the SQL files against Supabase to refresh the seeded content in your database
 - **`seed.sql` made re-runnable** — added `CREATE TABLE IF NOT EXISTS`, `DROP POLICY IF EXISTS` guards on each RLS policy, and a `DELETE FROM activities WHERE user_id IS NULL;` step before the inserts. You can now paste the whole file into the Supabase SQL Editor any time to refresh the curated activity content, without errors and without touching custom activities your users have built
+- **Developmental milestone chip inside every activity** — the "🌱 Links back to" section in the activity modal now shows a small coloured chip naming one of the six developmental milestones (Cognitive growth, Social skills, Fine motor, Language, Creativity & imagination, Understanding the world). The milestone is auto-derived from each activity's `area` field through a new `milestoneFor()` helper in `src/lib/data.ts`, so it works immediately for all 490+ seeded activities and any custom ones built with the builder. The same `MILESTONES` list now powers both the landing page badge grid and the modal chip, so the six milestones live in one place
 
 ---
 
@@ -472,4 +473,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 · made seed.sql safely re-runnable*
+*Last updated: 16 May 2026 · developmental milestone chip in the activity modal*

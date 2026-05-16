@@ -1,3 +1,5 @@
+import { MILESTONES } from "@/lib/data";
+
 export default function LandingPage() {
   const features = [
     {
@@ -38,14 +40,11 @@ export default function LandingPage() {
     { num: "3", label: "Play, learn and grow", desc: "Every activity ties back to a real milestone." },
   ];
 
-  const developmentBadges = [
-    { emoji: "🧠", label: "Cognitive growth", accent: "var(--clay)" },
-    { emoji: "🤝", label: "Social skills", accent: "var(--sage)" },
-    { emoji: "✋", label: "Fine motor", accent: "var(--mustard)" },
-    { emoji: "🗣️", label: "Language", accent: "var(--dusty-rose)" },
-    { emoji: "🎨", label: "Creativity & imagination", accent: "var(--dusty-blue)" },
-    { emoji: "🌍", label: "Understanding the world", accent: "var(--olive)" },
-  ];
+  const developmentBadges = MILESTONES.map((m) => ({
+    emoji: m.emoji,
+    label: m.label,
+    accent: m.color,
+  }));
 
   return (
     <div style={{ overflowX: "hidden" }}>

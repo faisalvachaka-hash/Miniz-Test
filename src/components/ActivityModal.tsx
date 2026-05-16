@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AGES, type Activity, type ActivityNote, type Child } from "@/lib/data";
+import { AGES, milestoneFor, type Activity, type ActivityNote, type Child } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
 
 const ACTIVE_CHILD_KEY = "miniz_active_child_id";
@@ -17,6 +17,7 @@ export function ActivityModal({
   onSaveChange?: (isSaved: boolean) => void;
 }) {
   const ageLabel = AGES.find((a) => a.age === activity.age)?.label ?? "";
+  const milestone = milestoneFor(activity.area);
   const [done, setDone] = useState<Set<number>>(new Set());
 
   // Save-to-library state (curated activities only — custom ones are always in library)
@@ -469,6 +470,12 @@ export function ActivityModal({
           <div className="modal-section">
             <h3>🌱 Links back to</h3>
             <div className="prior-stage">
+              <div className="milestone-chip">
+                <span className="milestone-emoji" style={{ background: milestone.color }}>
+                  {milestone.emoji}
+                </span>
+                <span className="milestone-label">{milestone.label}</span>
+              </div>
               <div className="prior-stage-label">Where this builds from</div>
               <div className="prior-stage-title">{activity.prior.stage}</div>
               <div className="prior-stage-desc">{activity.prior.desc}</div>
