@@ -1,12 +1,15 @@
 -- ============================================================
 -- Mini Z and Me, Supabase Setup
 -- Run this entire file in: Supabase Dashboard → SQL Editor
+-- Safe to re-run: skips creating things that already exist,
+-- and wipes old curated activities before reseeding the new ones.
+-- (Your users' custom activities are kept untouched.)
 -- ============================================================
 
 
--- STEP 1: Create the activities table
+-- STEP 1: Create the activities table (skipped if it already exists)
 -- ============================================================
-CREATE TABLE activities (
+CREATE TABLE IF NOT EXISTS activities (
   id            UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
   age           SMALLINT    NOT NULL CHECK (age >= 0 AND age <= 7),
   title         TEXT        NOT NULL,
@@ -27,9 +30,14 @@ CREATE TABLE activities (
 );
 
 
--- STEP 2: Enable Row Level Security
+-- STEP 2: Enable Row Level Security and (re)create policies
 -- ============================================================
 ALTER TABLE activities ENABLE ROW LEVEL SECURITY;
+
+-- Drop the existing policies so we can recreate them cleanly
+DROP POLICY IF EXISTS "Curated activities are public" ON activities;
+DROP POLICY IF EXISTS "Users can read own activities" ON activities;
+DROP POLICY IF EXISTS "Users can insert own activities" ON activities;
 
 -- Anyone (even logged-out visitors) can read curated activities
 CREATE POLICY "Curated activities are public"
@@ -49,7 +57,14 @@ CREATE POLICY "Users can insert own activities"
   WITH CHECK (user_id = auth.uid());
 
 
--- STEP 3: Seed the 13 curated activities
+-- STEP 3: Wipe old curated activities before reseeding
+-- ============================================================
+-- Only deletes curated entries (user_id IS NULL).
+-- Anything users have built themselves is preserved.
+DELETE FROM activities WHERE user_id IS NULL;
+
+
+-- STEP 4: Seed the 13 curated activities
 -- ============================================================
 INSERT INTO activities (age, title, emoji, color, area, subject, duration, materials, steps, prior_stage, prior_desc, safety, ease_of_prep, is_custom) VALUES
 
