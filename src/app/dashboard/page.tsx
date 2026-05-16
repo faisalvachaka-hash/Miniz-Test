@@ -64,10 +64,11 @@ export default function DashboardPage() {
         }
       }
       if (saves) {
-        for (const row of saves as Array<{ activities: Record<string, unknown> | null }>) {
-          if (row.activities) {
-            entries.push({ activity: mapActivityFromDB(row.activities), source: "saved" });
-          }
+        for (const row of saves as unknown as Array<{ activities: Record<string, unknown> | Record<string, unknown>[] | null }>) {
+          if (!row.activities) continue;
+          // Supabase types FK relations as arrays even when 1:1, so unwrap if needed
+          const a = Array.isArray(row.activities) ? row.activities[0] : row.activities;
+          if (a) entries.push({ activity: mapActivityFromDB(a), source: "saved" });
         }
       }
       setLibrary(entries);
