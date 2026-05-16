@@ -81,6 +81,15 @@ export function ActivityModal({
 
           <div className="modal-section">
             <h3>▶️ How to play</h3>
+            <p style={{
+              fontSize: 13,
+              color: "var(--ink-soft)",
+              fontWeight: 600,
+              fontStyle: "italic",
+              margin: "-4px 0 12px",
+            }}>
+              Tap each step to tick it off as you go ✓
+            </p>
             <ol className="steps-list">
               {activity.steps.map((s, i) => {
                 const isDone = done.has(i);
