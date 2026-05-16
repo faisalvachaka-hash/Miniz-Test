@@ -111,10 +111,16 @@ The homepage is now a **public marketing landing page** — the front door of th
 
 The activity browser is what used to live on the homepage. It is now a **protected page** — only logged-in users can see it. When the page loads, it first checks with Supabase whether there is a logged-in user; if not, it redirects to `/login`. It then loads the user's **child profiles** — if the user has no children yet, it sends them to `/onboarding` to add one. Once inside, a row of **child chips** appears at the top ("Showing for: 👶 Zara · 3"), with an active child highlighted. The matching age tile is pre-selected and the builder dropdown is pre-set to that child's age, but every age tile remains visible and clickable so a parent can switch any time. Clicking another child chip changes the active filter instantly; a dashed **+ Add child** chip links to the dashboard. The header still shows **My Library** (goes to `/dashboard`) and **Log Out**.
 
-Below the chip row, the experience is unchanged in shape: six colourful age tiles, subject filter chips, the activity card grid, modals with full activity details, and the "Build your own activity" tool at the bottom. A few quality-of-life touches:
+Below the chip row, the experience is unchanged in shape: six colourful age tiles, subject filter chips, the activity card grid (when an age is selected), modals with full activity details, and the "Build your own activity" tool at the bottom.
 
-- **Subject chip counts** — each subject filter now shows how many activities it contains, e.g. "💧 Water Play (120)"
-- **🎲 Surprise me! button** — a button on the "Activities" row picks a random activity from the current filter (or the whole library if no filter) and opens its modal. Great for indecisive Tuesdays
+**Age-gated browsing** — the activity grid is **hidden by default**. A friendly dashed-border panel ("☝️ Pick an age to begin") fills the space until the parent taps one of the age blocks (or clicks a child chip, which selects that child's age). This keeps the page calm and intentional — every browsing session starts with a deliberate "we're playing with this age today" moment, rather than dumping 493 activities on the screen at once. Tapping the same age tile again toggles back to the empty state.
+
+**Visual unity** — every activity card uses the colour of its **age tile** (dusty rose for 0, mustard for 1, clay for 2, sage for 3, dusty blue for 4, olive for 5). So when a parent filters to a single age, the whole grid reads as a cohesive set of stickers in that age's colour. The icon block, top-edge stripe and modal header all match.
+
+A few quality-of-life touches:
+
+- **Subject chip counts** — each subject filter shows how many activities it contains, e.g. "💧 Water Play (120)"
+- **🎲 Surprise me! button** — picks a random activity from the current filter (or the whole library if no filter) and opens its modal. Great for indecisive Tuesdays
 - **Tickable steps in the activity modal** — every step under "How to play" is clickable. Tap to mark it done (greys out + strikethrough); tap again to un-tick. A live progress line shows "2 of 4 done — keep going!" → "🎉 All done! Great play." once everything's ticked. The ticks reset when the modal closes — this is a live play-along helper, not a saved progress tracker
 
 **Saving curated activities** — every curated activity card has a small star button in the top-right corner. An outlined star (☆) means the activity isn't in your library yet; a filled star (★) means it is. Clicking the star toggles the saved state instantly (no page reload) and adds a "★ saved" chip to the card. The activity then shows up in your library on the dashboard. Custom activities you built yourself don't show a star — they're always in your library by definition.
@@ -428,6 +434,9 @@ These features are planned but not yet built:
 - **Personalised dashboard greeting** — "Playing with Zara today?" instead of "Welcome back, [email]"
 - **Quick wins batch** — 🎲 Surprise me button, subject chip counts, inline edit-name-and-age for children, tickable steps in the activity modal with progress message, per-route browser tab titles, custom 🐾 "Lost in the woods" 404 page
 - **Today's adventure** — one daily activity suggestion per child on the dashboard, with "We did this!" tracking in a new `completed_activities` table. Deterministic daily pick that resets at midnight
+- **Toy-like UI pass v2** — solid wooden-block age tiles with a corner "name tag" and chunky depth shadow, sticker-style cards with colour confined to the top edge, hand-drawn SVG doodles sprinkled into `/app`, drifting blob shapes, confetti burst on "We did this!"
+- **Age-matched activity colours** — every activity adopts its age tile's colour, so a filtered library reads as a cohesive set
+- **Age-gated activity grid** — the activity grid only appears once a parent has selected an age (intentional browsing, calmer first paint)
 
 ---
 
@@ -452,4 +461,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — shipped Today's adventure (daily activity suggestion + completion tracking)*
+*Last updated: 16 May 2026 — toy-like UI pass v2, age-matched activity colours, age-gated grid*

@@ -11,6 +11,9 @@ Most recent first. Each entry is a feature that's live in the app.
 
 | Date | Feature | Notes |
 |---|---|---|
+| 16 May 2026 | **Hide activities until age picked** | `/app` no longer shows the activity grid by default. A friendly dashed-border "☝️ Pick an age to begin" panel fills the space until a parent taps an age block or a child chip |
+| 16 May 2026 | **Activity cards match their age tile colour** | Every activity's accent colour now comes from its age tile (dusty rose / mustard / clay / sage / dusty blue / olive) instead of the per-subject DB colour — unified palette across the library |
+| 16 May 2026 | **Toy-like UI pass v2** | Activity cards: thinner outline, colour only on the top edge (toned down from earlier sticker-borders-all-around). Age tiles became solid wooden blocks with chunky depth shadow, paper "name tag" peeking from a corner, cream typography, and wobble-on-hover. Chips got a 3D depth shadow. Background blobs gently drift. Hand-drawn SVG doodles sprinkled across `/app`. "We did this!" got a confetti emoji burst + bounce-in celebrate animation |
 | 16 May 2026 | **Today's adventure** | Big terracotta card at the top of `/dashboard` that picks one activity per day for the active child. Deterministic seed (date + child id) so it stays the same until midnight. "We did this!" records the completion in a new `completed_activities` table; "Try another" / "Not feeling it" reshuffles. Child chip switcher shows when there are 2+ kids |
 | 16 May 2026 | **"Tap each step to tick it off" hint** | Small italic line below "How to play" in the activity modal so users discover that steps are tickable |
 | 16 May 2026 | **Quick wins batch** | 🎲 Surprise me button, subject chip counts, full edit (name + age) for children, tickable steps in the activity modal with progress message, per-route page titles, custom "Lost in the woods" 404 page |
@@ -82,4 +85,4 @@ Ideas captured but not yet evaluated. Move up the list when a real reason appear
 
 ---
 
-*Last updated: 16 May 2026 — shipped Today's adventure feature*
+*Last updated: 16 May 2026 — toy-like UI pass v2, age-matched card colours, age-gated activities*
