@@ -445,6 +445,7 @@ These features are planned but not yet built:
 - **Save toggle inside the activity modal** — mirrors the card-level star button, syncs with the rest of the UI
 - **"How to play" emoji updated** — changed from ▶️ (looked like a video button) to 👣 (footprints), which better communicates "follow these steps" in a hands-on activity context
 - **Friendlier signup error for existing emails** — when someone tries to sign up with an email that already has an account, the signup page now shows "An account with this email already exists. Try logging in instead." (Supabase, for security reasons, doesn't return a clear error in this case — it returns a user object with an empty `identities` array, which we now detect and translate into a clear, friendly message)
+- **Two new developmental-milestone cards on the landing page** — added 🎨 Creativity & imagination (dusty-blue) and 🌍 Understanding the world (olive) to the "Built on research" badge grid. The grid now shows 6 cards, all colour-coded against the palette already used for age tiles. The new milestones round out the EYFS-aligned set, complementing the existing four (Cognitive, Social, Fine motor, Language)
 
 ---
 
@@ -469,4 +470,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — friendlier signup error when email already exists*
+*Last updated: 16 May 2026 — added Creativity & imagination + Understanding the world developmental-milestone cards*

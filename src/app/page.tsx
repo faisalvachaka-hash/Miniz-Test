@@ -43,6 +43,8 @@ export default function LandingPage() {
     { emoji: "🤝", label: "Social skills", accent: "var(--sage)" },
     { emoji: "✋", label: "Fine motor", accent: "var(--mustard)" },
     { emoji: "🗣️", label: "Language", accent: "var(--dusty-rose)" },
+    { emoji: "🎨", label: "Creativity & imagination", accent: "var(--dusty-blue)" },
+    { emoji: "🌍", label: "Understanding the world", accent: "var(--olive)" },
   ];
 
   return (
@@ -457,7 +459,7 @@ export default function LandingPage() {
               padding: "28px 20px",
               border: "2px solid var(--paper-edge)",
               boxShadow: "var(--shadow-paper)",
-              transform: `rotate(${["1deg", "-0.7deg", "0.5deg", "-1deg"][i]})`,
+              transform: `rotate(${["1deg", "-0.7deg", "0.5deg", "-1deg", "0.8deg", "-0.5deg"][i]})`,
             }}>
               <div style={{
                 width: 56,
