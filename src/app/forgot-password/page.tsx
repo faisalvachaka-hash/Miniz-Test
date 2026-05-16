@@ -2,35 +2,60 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import AuthLayout from "@/components/AuthLayout";
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleLogin(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
 
     if (error) {
       setError(error.message);
       setLoading(false);
     } else {
-      router.push("/app");
+      setSent(true);
     }
   }
 
+  if (sent) {
+    return (
+      <AuthLayout title="Check your inbox 📬" subtitle="We've sent a password reset link to your email">
+        <div className="text-center">
+          <p className="font-semibold mb-6" style={{ color: "#5d5878", fontSize: 15, lineHeight: 1.6 }}>
+            Click the link in the email to set a new password. It may take a minute to arrive — check your spam folder too.
+          </p>
+          <Link href="/login" style={{
+            display: "inline-block",
+            background: "white",
+            border: "2px solid #efeaf7",
+            borderRadius: 14,
+            padding: "12px 28px",
+            fontWeight: 800,
+            fontSize: 14,
+            color: "#5d5878",
+            textDecoration: "none",
+          }}>
+            Back to Log In
+          </Link>
+        </div>
+      </AuthLayout>
+    );
+  }
+
   return (
-    <AuthLayout title="Welcome back! 👋" subtitle="Log in to your Mini Z and Me account">
-      <form onSubmit={handleLogin} className="flex flex-col gap-4">
+    <AuthLayout title="Reset your password 🔑" subtitle="Enter your email and we'll send you a reset link">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
           <label className="block text-sm font-bold mb-1.5" style={{ color: "#2b2740" }}>
             Email address
@@ -45,20 +70,6 @@ export default function LoginPage() {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-bold mb-1.5" style={{ color: "#2b2740" }}>
-            Password
-          </label>
-          <input
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Your password"
-            style={inputStyle}
-          />
-        </div>
-
         {error && (
           <div className="safety-banner">⚠️ {error}</div>
         )}
@@ -69,19 +80,13 @@ export default function LoginPage() {
           className="btn-primary w-full"
           style={{ opacity: loading ? 0.7 : 1, cursor: loading ? "not-allowed" : "pointer" }}
         >
-          {loading ? "Logging in…" : "Log In →"}
+          {loading ? "Sending…" : "Send reset link →"}
         </button>
 
         <p className="text-center text-sm font-semibold" style={{ color: "#5d5878" }}>
-          <Link href="/forgot-password" style={{ color: "#a37cf0", fontWeight: 800 }}>
-            Forgot password?
-          </Link>
-        </p>
-
-        <p className="text-center text-sm font-semibold" style={{ color: "#5d5878" }}>
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" style={{ color: "#a37cf0", fontWeight: 800 }}>
-            Sign up free
+          Remember your password?{" "}
+          <Link href="/login" style={{ color: "#a37cf0", fontWeight: 800 }}>
+            Log in
           </Link>
         </p>
       </form>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   AGES,
   SUGGESTIONS,
@@ -10,17 +11,38 @@ import {
   type AgeKey,
 } from "@/lib/data";
 import { supabase } from "@/lib/supabase";
+import { ActivityModal } from "@/components/ActivityModal";
+
+const SUBJECT_EMOJIS: Record<string, string> = {
+  "Science":       "🔬",
+  "Maths":         "🔢",
+  "Writing":       "✏️",
+  "Sensory Play":  "🌊",
+  "Arts & Crafts": "🎨",
+  "Outdoor":       "🌿",
+  "Water Play":    "💧",
+  "Sand Play":     "🏖️",
+};
 
 export default function MinizApp() {
+  const router = useRouter();
   const [curatedActivities, setCuratedActivities] = useState<Activity[]>([]);
   const [customActivities, setCustomActivities] = useState<Activity[]>([]);
   const [loadingActivities, setLoadingActivities] = useState(true);
   const [currentAge, setCurrentAge] = useState<AgeKey | null>(null);
+  const [currentSubject, setCurrentSubject] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
   const [builderText, setBuilderText] = useState("");
   const [builderAge, setBuilderAge] = useState<AgeKey>(2);
   const [saving, setSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auth guard — redirect to login if not logged in
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) router.push("/login");
+    });
+  }, [router]);
 
   // Fetch curated activities from Supabase on mount
   useEffect(() => {
@@ -60,16 +82,25 @@ export default function MinizApp() {
 
   const filteredActivities = useMemo(
     () =>
-      currentAge === null
-        ? allActivities
-        : allActivities.filter((a) => a.age === currentAge),
-    [allActivities, currentAge]
+      allActivities
+        .filter((a) => currentAge === null || a.age === currentAge)
+        .filter((a) => currentSubject === null || a.subject === currentSubject),
+    [allActivities, currentAge, currentSubject]
   );
 
   const ageCounts = useMemo(() => {
     const counts: Record<number, number> = {};
     for (const a of allActivities) counts[a.age] = (counts[a.age] ?? 0) + 1;
     return counts;
+  }, [allActivities]);
+
+  const subjects = useMemo(() => {
+    const seen = new Set<string>();
+    for (const a of allActivities) if (a.subject) seen.add(a.subject);
+    return Array.from(seen).sort().map((label) => ({
+      label,
+      emoji: SUBJECT_EMOJIS[label] ?? "📚",
+    }));
   }, [allActivities]);
 
   const selectedActivity = useMemo(
@@ -92,6 +123,10 @@ export default function MinizApp() {
 
   function handleAgeClick(age: AgeKey) {
     setCurrentAge((prev) => (prev === age ? null : age));
+  }
+
+  function handleSubjectClick(subject: string) {
+    setCurrentSubject((prev) => (prev === subject ? null : subject));
   }
 
   async function handleBuild() {
@@ -159,6 +194,8 @@ export default function MinizApp() {
       ? "all ages"
       : AGES.find((a) => a.age === currentAge)?.label ?? "";
 
+  const currentSubjectLabel = currentSubject ?? "all subjects";
+
   return (
     <>
       <div className="blob b1" />
@@ -166,9 +203,9 @@ export default function MinizApp() {
       <div className="blob b3" />
 
       <header className="text-center pt-9 pb-4 px-5">
-        {/* Auth nav */}
+        {/* App nav */}
         <div className="flex justify-end gap-2 max-w-[1180px] mx-auto mb-4">
-          <a href="/login" style={{
+          <a href="/dashboard" style={{
             background: "white",
             border: "2px solid #efeaf7",
             borderRadius: 12,
@@ -178,16 +215,24 @@ export default function MinizApp() {
             color: "#5d5878",
             textDecoration: "none",
           }}>
-            Log In
+            My Library
           </a>
-          <a href="/signup" className="btn-primary" style={{
-            borderRadius: 12,
-            padding: "8px 18px",
-            fontSize: 13,
-            textDecoration: "none",
-          }}>
-            Sign Up
-          </a>
+          <button
+            onClick={async () => { await supabase.auth.signOut(); router.push("/"); }}
+            style={{
+              background: "white",
+              border: "2px solid #efeaf7",
+              borderRadius: 12,
+              padding: "8px 18px",
+              fontWeight: 800,
+              fontSize: 13,
+              color: "#5d5878",
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            Log Out
+          </button>
         </div>
 
         <div className="logo">
@@ -235,7 +280,36 @@ export default function MinizApp() {
         </div>
 
         <div className="section-title">
+          Filter by subject <span className="pill">tap to narrow</span>
+        </div>
+
+        <div className="flex flex-wrap gap-2.5">
+          {subjects.map((s) => {
+            const active = currentSubject === s.label;
+            return (
+              <button
+                key={s.label}
+                onClick={() => handleSubjectClick(s.label)}
+                className="chip"
+                style={{
+                  fontSize: 13,
+                  padding: "7px 16px",
+                  cursor: "pointer",
+                  border: active ? "2px solid #a37cf0" : "2px solid transparent",
+                  background: active ? "#f0ebff" : undefined,
+                  color: active ? "#6b42c8" : undefined,
+                  fontFamily: "inherit",
+                }}
+              >
+                {s.emoji} {s.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="section-title">
           Activities <span className="pill">{currentAgeLabel}</span>
+          {currentSubject && <span className="pill">{currentSubjectLabel}</span>}
         </div>
 
         {loadingActivities ? (
@@ -350,93 +424,3 @@ export default function MinizApp() {
   );
 }
 
-function ActivityModal({
-  activity,
-  onClose,
-}: {
-  activity: Activity;
-  onClose: () => void;
-}) {
-  const ageLabel = AGES.find((a) => a.age === activity.age)?.label ?? "";
-  return (
-    <div
-      className="modal-backdrop"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div className="modal">
-        <div
-          className="modal-header"
-          style={{
-            background: `linear-gradient(135deg, ${activity.color}55 0%, rgba(255,255,255,0) 100%)`,
-          }}
-        >
-          <button className="modal-close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
-          <div className="modal-emoji">{activity.emoji}</div>
-          <h2>{activity.title}</h2>
-          <div className="modal-sub">
-            {ageLabel} · {activity.area}
-          </div>
-        </div>
-        <div className="modal-body">
-          <div className="grid gap-2.5 mt-3" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))" }}>
-            <div className="stat">
-              <div className="stat-label">Play time</div>
-              <div className="stat-value">⏱ {activity.duration}</div>
-            </div>
-            <div className="stat">
-              <div className="stat-label">Age</div>
-              <div className="stat-value">{ageLabel}</div>
-            </div>
-            {activity.easeOfPrep && (
-              <div className="stat">
-                <div className="stat-label">Ease of prep</div>
-                <div className="stat-value">⚡ {activity.easeOfPrep}/10</div>
-              </div>
-            )}
-            <div className="stat">
-              <div className="stat-label">Focus</div>
-              <div className="stat-value" style={{ fontSize: 13 }}>
-                {activity.area}
-              </div>
-            </div>
-          </div>
-
-          <div className="modal-section">
-            <h3>🧺 What you&apos;ll need</h3>
-            <ul className="materials-list">
-              {activity.materials.map((m, i) => (
-                <li key={i}>{m}</li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="modal-section">
-            <h3>▶️ How to play</h3>
-            <ol className="steps-list">
-              {activity.steps.map((s, i) => (
-                <li key={i}>{s}</li>
-              ))}
-            </ol>
-          </div>
-
-          <div className="modal-section">
-            <h3>🌱 Links back to</h3>
-            <div className="prior-stage">
-              <div className="prior-stage-label">Earlier development stage</div>
-              <div className="prior-stage-title">{activity.prior.stage}</div>
-              <div className="prior-stage-desc">{activity.prior.desc}</div>
-            </div>
-          </div>
-
-          {activity.safety && (
-            <div className="safety-banner">⚠️ {activity.safety}</div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
