@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { AGES, type Activity } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { AGES, type Activity, type ActivityNote, type Child } from "@/lib/data";
+import { supabase } from "@/lib/supabase";
+
+const ACTIVE_CHILD_KEY = "miniz_active_child_id";
 
 export function ActivityModal({
   activity,
@@ -13,6 +16,13 @@ export function ActivityModal({
   const ageLabel = AGES.find((a) => a.age === activity.age)?.label ?? "";
   const [done, setDone] = useState<Set<number>>(new Set());
 
+  // Notes state
+  const [activeChild, setActiveChild] = useState<Child | null>(null);
+  const [notes, setNotes] = useState<ActivityNote[]>([]);
+  const [notesLoading, setNotesLoading] = useState(true);
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
+
   function toggleStep(i: number) {
     setDone((prev) => {
       const next = new Set(prev);
@@ -21,6 +31,95 @@ export function ActivityModal({
       return next;
     });
   }
+
+  // Load active child + notes for (this activity, this child)
+  useEffect(() => {
+    (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        setNotesLoading(false);
+        return;
+      }
+      const storedId = typeof window !== "undefined"
+        ? window.localStorage.getItem(ACTIVE_CHILD_KEY)
+        : null;
+
+      // Resolve the active child
+      const { data: kids } = await supabase
+        .from("children")
+        .select("id, name, age")
+        .order("created_at", { ascending: true });
+      const list = (kids ?? []) as Child[];
+      const child = list.find((c) => c.id === storedId) ?? list[0] ?? null;
+      setActiveChild(child);
+
+      if (!child) {
+        setNotesLoading(false);
+        return;
+      }
+
+      // Fetch notes for this (child, activity)
+      const { data: rows } = await supabase
+        .from("activity_notes")
+        .select("*")
+        .eq("child_id", child.id)
+        .eq("activity_id", activity.id)
+        .order("created_at", { ascending: false });
+      if (rows) setNotes(rows as ActivityNote[]);
+      setNotesLoading(false);
+    })();
+  }, [activity.id]);
+
+  async function handleAddNote(e: React.FormEvent) {
+    e.preventDefault();
+    const body = draft.trim();
+    if (!body || !activeChild) return;
+    setSaving(true);
+
+    const { data: userData } = await supabase.auth.getUser();
+    if (!userData.user) {
+      setSaving(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("activity_notes")
+      .insert({
+        user_id: userData.user.id,
+        child_id: activeChild.id,
+        activity_id: activity.id,
+        body,
+      })
+      .select()
+      .single();
+
+    if (data && !error) {
+      setNotes((prev) => [data as ActivityNote, ...prev]);
+      setDraft("");
+    } else if (error) {
+      console.error("Failed to save note:", error.message);
+    }
+    setSaving(false);
+  }
+
+  async function handleDeleteNote(noteId: string) {
+    // Optimistic
+    setNotes((prev) => prev.filter((n) => n.id !== noteId));
+    const { error } = await supabase.from("activity_notes").delete().eq("id", noteId);
+    if (error) {
+      console.error("Failed to delete note:", error.message);
+    }
+  }
+
+  function formatNoteDate(iso: string): string {
+    const d = new Date(iso);
+    return d.toLocaleDateString(undefined, {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  }
+
   return (
     <div
       className="modal-backdrop"
@@ -123,6 +222,143 @@ export function ActivityModal({
               </div>
             )}
           </div>
+
+          {/* How it went — private notes per child */}
+          {activeChild && (
+            <div className="modal-section">
+              <h3>📓 How it went · {activeChild.name}</h3>
+              <p style={{
+                fontSize: 13,
+                color: "var(--ink-soft)",
+                fontWeight: 600,
+                fontStyle: "italic",
+                margin: "-4px 0 12px",
+              }}>
+                A private memory book. Only you can see these notes.
+              </p>
+
+              <form onSubmit={handleAddNote} style={{ marginBottom: 14 }}>
+                <textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder={`e.g. ${activeChild.name} loved squishing the foam — wanted to do it twice`}
+                  rows={2}
+                  style={{
+                    width: "100%",
+                    border: "2px solid var(--paper-edge)",
+                    borderRadius: "var(--r1)",
+                    padding: "10px 14px",
+                    fontFamily: "inherit",
+                    fontSize: 14,
+                    outline: "none",
+                    background: "var(--cream)",
+                    color: "var(--ink)",
+                    fontWeight: 600,
+                    resize: "vertical",
+                    boxSizing: "border-box",
+                  }}
+                />
+                <button
+                  type="submit"
+                  className="btn-primary"
+                  disabled={saving || !draft.trim()}
+                  style={{
+                    marginTop: 8,
+                    fontSize: 13,
+                    padding: "10px 18px",
+                    opacity: saving || !draft.trim() ? 0.6 : 1,
+                    cursor: saving || !draft.trim() ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {saving ? "Saving…" : "Add memory"}
+                </button>
+              </form>
+
+              {notesLoading ? (
+                <div style={{ color: "var(--ink-soft)", fontSize: 13, fontWeight: 600, textAlign: "center", padding: "12px 0" }}>
+                  Loading notes…
+                </div>
+              ) : notes.length === 0 ? (
+                <div
+                  style={{
+                    color: "var(--ink-soft)",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    textAlign: "center",
+                    padding: "16px",
+                    border: "2px dashed var(--paper-edge)",
+                    borderRadius: "var(--r1)",
+                  }}
+                >
+                  No memories yet for this activity.
+                  <br />Jot a quick note above to start the journal.
+                </div>
+              ) : (
+                <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
+                  {notes.map((n) => (
+                    <li
+                      key={n.id}
+                      style={{
+                        background: "var(--cream)",
+                        border: "2px solid var(--paper-edge)",
+                        borderLeft: `5px solid ${activity.color}`,
+                        borderRadius: "var(--r1)",
+                        padding: "12px 14px",
+                        position: "relative",
+                      }}
+                    >
+                      <div style={{
+                        whiteSpace: "pre-wrap",
+                        color: "var(--ink)",
+                        fontWeight: 600,
+                        fontSize: 14,
+                        lineHeight: 1.5,
+                        paddingRight: 70,
+                      }}>
+                        {n.body}
+                      </div>
+                      <div style={{
+                        marginTop: 6,
+                        fontSize: 11,
+                        fontWeight: 800,
+                        color: "var(--ink-faint)",
+                        letterSpacing: 0.3,
+                        textTransform: "uppercase",
+                      }}>
+                        {formatNoteDate(n.created_at)}
+                      </div>
+                      <button
+                        onClick={() => handleDeleteNote(n.id)}
+                        aria-label="Delete note"
+                        title="Delete note"
+                        style={{
+                          position: "absolute",
+                          top: 8,
+                          right: 8,
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50% 45% 50% 50% / 50% 50% 45% 50%",
+                          border: "2px solid #e9bdb0",
+                          background: "var(--paper)",
+                          color: "#a14a3a",
+                          fontWeight: 800,
+                          fontSize: 14,
+                          cursor: "pointer",
+                          lineHeight: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: "0 2px 0 #e9bdb0",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           <div className="modal-section">
             <h3>🌱 Links back to</h3>

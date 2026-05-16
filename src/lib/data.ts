@@ -36,6 +36,14 @@ export type Child = {
   age: AgeKey;
 };
 
+export type ActivityNote = {
+  id: string;
+  child_id: string;
+  activity_id: string;
+  body: string;
+  created_at: string;
+};
+
 export const AGES: AgeGroup[] = [
   { age: 0, label: "0 years", sub: "Baby", emoji: "👶", color: "#c97a6b" },        // dusty rose
   { age: 1, label: "1 year", sub: "Wobbler", emoji: "🍼", color: "#d4a949" },      // mustard

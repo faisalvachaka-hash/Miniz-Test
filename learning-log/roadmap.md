@@ -11,6 +11,7 @@ Most recent first. Each entry is a feature that's live in the app.
 
 | Date | Feature | Notes |
 |---|---|---|
+| 16 May 2026 | **Activity notes / journal** | Private memory book per (child, activity). New "📓 How it went" section inside the activity modal lets a parent jot notes — "Zara loved squishing the foam, hated the wet sponge" — and they're saved to a new `activity_notes` table with RLS. Notes for the active child only. Add via textarea + button; delete via `×` on each card. Newest first |
 | 16 May 2026 | **Hide activities until age picked** | `/app` no longer shows the activity grid by default. A friendly dashed-border "☝️ Pick an age to begin" panel fills the space until a parent taps an age block or a child chip |
 | 16 May 2026 | **Activity cards match their age tile colour** | Every activity's accent colour now comes from its age tile (dusty rose / mustard / clay / sage / dusty blue / olive) instead of the per-subject DB colour — unified palette across the library |
 | 16 May 2026 | **Toy-like UI pass v2** | Activity cards: thinner outline, colour only on the top edge (toned down from earlier sticker-borders-all-around). Age tiles became solid wooden blocks with chunky depth shadow, paper "name tag" peeking from a corner, cream typography, and wobble-on-hover. Chips got a 3D depth shadow. Background blobs gently drift. Hand-drawn SVG doodles sprinkled across `/app`. "We did this!" got a confetti emoji burst + bounce-in celebrate animation |
@@ -42,7 +43,6 @@ _(Backlog empty — add new ideas here as they come up.)_
 
 | Idea | Why it matters |
 |---|---|
-| **Activity notes / journal** | After a parent does an activity, let them jot a quick note ("Zara loved the foil bit, hated the wet sponge"). Builds a private journal per child. Strong emotional payoff |
 | **Themed / seasonal activity collections** | Curated bundles tied to a time of year or celebration — Christmas, Eid, Diwali, Hanukkah, summer, winter, Halloween. Filter chip + landing tiles that surface the right activities at the right time |
 | **Worksheets & printable resources per activity** | For each activity, attach optional supporting materials — keyword cards, colouring sheets, image prompts, vocabulary lists — that parents can print or view |
 | **Book recommendations per activity** | Suggest 2–3 picture books that pair thematically with each activity ("Water Sensory Play" → *Splash!*, *The Rainbow Fish*). Adds depth and gives parents a follow-on |
@@ -85,4 +85,4 @@ Ideas captured but not yet evaluated. Move up the list when a real reason appear
 
 ---
 
-*Last updated: 16 May 2026 — toy-like UI pass v2, age-matched card colours, age-gated activities*
+*Last updated: 16 May 2026 — shipped activity notes / journal*

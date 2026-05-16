@@ -79,7 +79,8 @@ Project 1 - Mini Z App/
 │   ├── seed_nature.sql         ← 120 Outdoor / Nature activities (ages 0–5, 20 per age)
 │   ├── children_table.sql      ← Children table CREATE + RLS for child profiles
 │   ├── saved_activities_table.sql ← Join table tracking which curated activities each user has saved
-│   └── completed_activities_table.sql ← Records each activity a child has completed (powers "Today's adventure")
+│   ├── completed_activities_table.sql ← Records each activity a child has completed (powers "Today's adventure")
+│   └── activity_notes_table.sql ← Private memory notes per (child, activity) — the journal
 │
 ├── prototype/
 │   └── index.html              ← The original single-file HTML prototype (kept for reference)
@@ -122,6 +123,7 @@ A few quality-of-life touches:
 - **Subject chip counts** — each subject filter shows how many activities it contains, e.g. "💧 Water Play (120)"
 - **🎲 Surprise me! button** — picks a random activity from the current filter (or the whole library if no filter) and opens its modal. Great for indecisive Tuesdays
 - **Tickable steps in the activity modal** — every step under "How to play" is clickable. Tap to mark it done (greys out + strikethrough); tap again to un-tick. A live progress line shows "2 of 4 done — keep going!" → "🎉 All done! Great play." once everything's ticked. The ticks reset when the modal closes — this is a live play-along helper, not a saved progress tracker
+- **Activity notes / journal** — a private "📓 How it went · [child's name]" section in the modal. Parents can jot quick memories ("Zara loved squishing the foam — wanted to do it twice") which are saved per `(child, activity)` pair in the `activity_notes` table. Notes are listed newest-first with a date stamp, and a small `×` button removes each one. Each note appears as a paper card with a coloured left edge matching the activity's age tile
 
 **Saving curated activities** — every curated activity card has a small star button in the top-right corner. An outlined star (☆) means the activity isn't in your library yet; a filled star (★) means it is. Clicking the star toggles the saved state instantly (no page reload) and adds a "★ saved" chip to the card. The activity then shows up in your library on the dashboard. Custom activities you built yourself don't show a star — they're always in your library by definition.
 
@@ -437,6 +439,7 @@ These features are planned but not yet built:
 - **Toy-like UI pass v2** — solid wooden-block age tiles with a corner "name tag" and chunky depth shadow, sticker-style cards with colour confined to the top edge, hand-drawn SVG doodles sprinkled into `/app`, drifting blob shapes, confetti burst on "We did this!"
 - **Age-matched activity colours** — every activity adopts its age tile's colour, so a filtered library reads as a cohesive set
 - **Age-gated activity grid** — the activity grid only appears once a parent has selected an age (intentional browsing, calmer first paint)
+- **Activity notes / journal** — private memory journal per `(child, activity)` inside the activity modal. Notes are saved to a new `activity_notes` Supabase table with RLS
 
 ---
 
@@ -461,4 +464,4 @@ Tell Claude:
 
 ---
 
-*Last updated: 16 May 2026 — toy-like UI pass v2, age-matched activity colours, age-gated grid*
+*Last updated: 16 May 2026 — shipped activity notes / journal*
